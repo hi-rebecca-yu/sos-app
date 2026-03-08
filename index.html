@@ -411,10 +411,12 @@ a { text-decoration: none; color: inherit; }
   padding: 32px 28px; text-align: center;
 }
 .phrase-overlay.show { display: flex; }
-.phrase-label { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
-.phrase-zh  { font-size: 18px; color: rgba(255,255,255,0.7); margin-bottom: 14px; font-weight: 300; }
-.phrase-en  { font-size: 28px; font-weight: 900; color: white; line-height: 1.25; font-family: var(--display); }
-.phrase-close { margin-top: 36px; font-size: 15px; color: rgba(255,255,255,0.5); cursor: pointer; font-family: var(--sans); }
+.phrase-label { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 16px; font-weight: 500; }
+.phrase-zh  { font-size: 18px; color: rgba(255,255,255,0.7); margin-bottom: 8px; font-weight: 400; }
+.phrase-en  { font-size: 32px; font-weight: 800; color: white; line-height: 1.25; font-family: var(--display); margin-bottom: 32px; }
+.phrase-play { display:flex; align-items:center; justify-content:center; gap:8px; padding:16px 24px; border-radius:100px; background:rgba(255,255,255,0.15); color:white; font-size:18px; font-weight:600; font-family:var(--sans); border:1px solid rgba(255,255,255,0.3); transition:all 0.15s; margin-bottom:24px; cursor:pointer;}
+.phrase-play:hover { background:rgba(255,255,255,0.25); border-color:rgba(255,255,255,0.4); }
+.phrase-close { font-size: 15px; color: rgba(255,255,255,0.5); cursor: pointer; font-family: var(--sans); }
 
 /* ── CONFIRM DIALOG ── */
 .confirm-backdrop {
@@ -592,11 +594,19 @@ a { text-decoration: none; color: inherit; }
     </div>
 
     <div class="section-label">語言求救</div>
-    <button class="inj-card" style="border-color:var(--blue-border);margin-bottom:8px" onclick="openLangScreen()">
+    <button class="voice-btn" style="background:var(--blue);margin-bottom:12px;" onclick="toggleVoice()">
+      <div class="v-mic" id="voiceIconIntl">🎙️</div>
+      <div class="v-copy" style="text-align:left;">
+        <div class="v-main" id="voiceMainIntl">說出求救需求</div>
+        <div class="v-sub"  id="voiceSubIntl">「叫救護車」「我出車禍」「幫我報警」</div>
+      </div>
+      <div class="v-arrow">›</div>
+    </button>
+    <button class="inj-card" style="border-color:var(--border);border-bottom-color:var(--blue-border);margin-bottom:8px" onclick="openLangScreen()">
       <span class="inj-icon">🗣</span>
       <div>
-        <div class="inj-name" style="color:var(--blue)">讓對方看螢幕求救</div>
-        <div class="inj-sub">英文大字顯示，依情境選擇</div>
+        <div class="inj-name" style="color:var(--blue)">手動選擇情境字卡</div>
+        <div class="inj-sub">點此查看所有英文求救句型</div>
       </div>
       <span style="margin-left:auto;color:var(--blue);font-size:18px">›</span>
     </button>
@@ -772,11 +782,12 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <!-- Phrase full-screen overlay -->
-<div class="phrase-overlay" id="phraseOverlay" onclick="hidePhrase()">
+<div class="phrase-overlay" id="phraseOverlay">
   <div class="phrase-label">SHOW THIS TO THEM · 讓對方看螢幕</div>
   <div class="phrase-zh" id="phraseZh"></div>
   <div class="phrase-en" id="phraseEn"></div>
-  <div class="phrase-close">點任何地方關閉 · tap anywhere to close</div>
+  <button class="phrase-play" onclick="playPhrase()">🔊 播放語音</button>
+  <div class="phrase-close" onclick="hidePhrase()">點此或任何地方關閉 · tap here to close</div>
 </div>
 
 <!-- Confirm Dialog (region switch mid-flow) -->
@@ -1152,7 +1163,13 @@ function _applyRegion(region) {
   document.getElementById('heroSub').textContent = isTW
     ? '告訴我發生了什麼，我會一步一步陪你處理。'
     : '國際緊急模式：電話和步驟已為國外使用情境更新。';
-  if (!isTW && !currentCountry) detectCountry();
+  
+  // Hide GPS info smoothly if switching to TW
+  if (isTW) {
+    document.getElementById('gpsDetect').style.display = 'none';
+  } else if (!currentCountry) {
+    detectCountry();
+  }
 }
 
 
@@ -1280,10 +1297,22 @@ function showPhrase(key) {
   if (!p) return;
   document.getElementById('phraseZh').textContent = p.zh;
   document.getElementById('phraseEn').innerHTML   = p.en;
+  // attach english string to button dataset for TTS
+  document.getElementById('phraseOverlay').dataset.en = p.en;
   document.getElementById('phraseOverlay').classList.add('show');
 }
 function hidePhrase() {
   document.getElementById('phraseOverlay').classList.remove('show');
+  try { window.speechSynthesis.cancel(); } catch(e){}
+}
+function playPhrase() {
+  const enText = document.getElementById('phraseOverlay').dataset.en;
+  if (!enText || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(enText);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
 }
 
 // ══════════════════════════════════════════════
@@ -2264,6 +2293,15 @@ const VOICE_MAP = [
   { id:'abrasion',  words:['擦傷','摔車','跌倒','破皮','撞傷','瘀青','擦破'] },
   { id:'sprain',    words:['扭傷','扭到','挫傷','腳踝','手腕扭','扭腳'] },
   { id:'cut',       words:['割傷','刺傷','割到','刺到','流血','切到','玻璃割','刀割'] },
+const INTL_VOICE_MAP = [
+  { id:'ambulance', words:['救護車','叫救護','119','急救'] },
+  { id:'police',    words:['警察','報警','110','犯罪','報案'] },
+  { id:'crash',     words:['車禍','撞車','事故','追撞'] },
+  { id:'lost',      words:['迷路','哪裡','找路'] },
+  { id:'robbery',   words:['搶劫','遭竊','小偷','偷走','錢包','被搶'] },
+  { id:'hospital',  words:['醫院','生病','看醫生','受傷送醫院'] },
+  { id:'insurance', words:['保險','理賠','收據','診斷'] },
+  { id:'allergy',   words:['過敏','藥物','打針'] },
 ];
 
 function toggleVoice() {
@@ -2280,13 +2318,32 @@ function startVoice() {
 
   recognition.onstart = () => {
     isListening = true;
-    document.getElementById('voiceBtn').classList.add('listening');
-    document.getElementById('voiceIcon').textContent = '🔴';
-    document.getElementById('voiceMain').textContent = '正在聆聽...';
-    document.getElementById('voiceSub').textContent = '說完後放開';
+    const isTW = currentRegion === 'tw';
+    // TW UI update
+    if (isTW) {
+      document.getElementById('voiceBtn').classList.add('listening');
+      document.getElementById('voiceIcon').textContent = '🔴';
+      document.getElementById('voiceMain').textContent = '正在聆聽...';
+      document.getElementById('voiceSub').textContent = '說完後放開';
+    } else { // Intl UI update
+      document.querySelectorAll('.voice-btn').forEach(btn=>btn.classList.add('listening'));
+      document.getElementById('voiceIconIntl').textContent = '🔴';
+      document.getElementById('voiceMainIntl').textContent = '正在辨識需求...';
+      document.getElementById('voiceSubIntl').textContent = '說完後放開';
+    }
+    
     document.getElementById('transcriptBox').classList.add('show');
     document.getElementById('transcriptText').textContent = '...';
     document.getElementById('transcriptMatch').style.display = 'none';
+    
+    // Move the transcript box right below the active button
+    if (!isTW) {
+      const tb = document.getElementById('transcriptBox');
+      document.getElementById('sectionIntl').insertBefore(tb, document.getElementById('voiceIconIntl').parentElement.nextSibling);
+    } else {
+      const tb = document.getElementById('transcriptBox');
+      document.getElementById('sectionTW').insertBefore(tb, document.getElementById('voiceIcon').parentElement.nextSibling);
+    }
   };
   recognition.onresult = e => {
     const txt = Array.from(e.results).map(r => r[0].transcript).join('');
@@ -2301,20 +2358,38 @@ function startVoice() {
 function stopVoice() {
   isListening = false;
   if (recognition) { try { recognition.stop(); } catch(e){} }
-  document.getElementById('voiceBtn').classList.remove('listening');
+  
+  // reset both buttons states
+  document.querySelectorAll('.voice-btn').forEach(btn=>btn.classList.remove('listening'));
   document.getElementById('voiceIcon').textContent = '🎙️';
   document.getElementById('voiceMain').textContent = '說出發生什麼事';
   document.getElementById('voiceSub').textContent = '「我出車禍了」「有人燙傷」「朋友昏倒」';
+  
+  if(document.getElementById('voiceIconIntl')) {
+    document.getElementById('voiceIconIntl').textContent = '🎙️';
+    document.getElementById('voiceMainIntl').textContent = '說出求救需求';
+    document.getElementById('voiceSubIntl').textContent = '「叫救護車」「我出車禍」「幫我報警」';
+  }
+  
   setTimeout(() => document.getElementById('transcriptBox').classList.remove('show'), 2500);
 }
 
 function matchVoice(txt) {
-  const m = VOICE_MAP.find(p => p.words.some(w => txt.includes(w)));
-  if (m) {
-    const name = FLOWS[m.id]?.name || m.id;
-    document.getElementById('transcriptMatch').style.display = 'flex';
-    document.getElementById('matchLabel').textContent = name;
-    setTimeout(() => startFlow(m.id), 700);
+  if (currentRegion === 'tw') {
+    const m = VOICE_MAP.find(p => p.words.some(w => txt.includes(w)));
+    if (m) {
+      const name = FLOWS[m.id]?.name || m.id;
+      document.getElementById('transcriptMatch').style.display = 'flex';
+      document.getElementById('matchLabel').textContent = name;
+      setTimeout(() => startFlow(m.id), 700);
+    }
+  } else {
+    const m = INTL_VOICE_MAP.find(p => p.words.some(w => txt.includes(w)));
+    if (m) {
+      document.getElementById('transcriptMatch').style.display = 'flex';
+      document.getElementById('matchLabel').textContent = '切換至英文求救卡';
+      setTimeout(() => showPhrase(m.id), 700);
+    }
   }
 }
 </script>
