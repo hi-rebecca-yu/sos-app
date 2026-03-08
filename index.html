@@ -179,7 +179,7 @@ a { text-decoration: none; color: inherit; }
 .inj-grid { display: flex; flex-direction: column; gap: 8px; }
 .inj-card {
   background: var(--surface); border: 1.5px solid var(--green-border);
-  border-radius: var(--r-md); padding: 13px 15px;
+  border-radius: var(--r-xl); padding: 13px 15px;
   cursor: pointer; display: flex; align-items: center; gap: 13px;
   transition: all 0.15s; text-align: left; width: 100%;
 }
@@ -210,7 +210,7 @@ a { text-decoration: none; color: inherit; }
 .iec-num-val { font-size: 18px; font-weight: 900; color: var(--red); font-family: var(--mono); }
 .tw-backup-card {
   background: var(--surface); border: 1.5px solid var(--amber-border);
-  border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 2px;
+  border-radius: var(--r-xl); padding: 14px 16px; margin-bottom: 2px;
   display: flex; align-items: flex-start; gap: 12px;
 }
 .tw-backup-title { font-size: 15px; font-weight: 400; margin-bottom: 6px; }
@@ -2293,6 +2293,8 @@ const VOICE_MAP = [
   { id:'abrasion',  words:['擦傷','摔車','跌倒','破皮','撞傷','瘀青','擦破'] },
   { id:'sprain',    words:['扭傷','扭到','挫傷','腳踝','手腕扭','扭腳'] },
   { id:'cut',       words:['割傷','刺傷','割到','刺到','流血','切到','玻璃割','刀割'] },
+];
+
 const INTL_VOICE_MAP = [
   { id:'ambulance', words:['救護車','叫救護','119','急救'] },
   { id:'police',    words:['警察','報警','110','犯罪','報案'] },
@@ -2306,15 +2308,28 @@ const INTL_VOICE_MAP = [
 
 function toggleVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { alert('此瀏覽器不支援語音辨識，請使用 Chrome'); return; }
-  isListening ? stopVoice() : startVoice();
+  if (!SR) { alert('此瀏覽器不支援語音辨識，請使用 Chrome 或 Safari'); return; }
+  if (isListening) {
+    stopVoice();
+  } else {
+    startVoice();
+  }
 }
 
 function startVoice() {
+  if (isListening) return;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  // Re-instantiate to avoid StateErrors
+  if (recognition) {
+    try { recognition.abort(); } catch(e){}
+    recognition = null;
+  }
+  
   recognition = new SR();
   recognition.lang = 'zh-TW';
   recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
     isListening = true;
@@ -2350,14 +2365,27 @@ function startVoice() {
     document.getElementById('transcriptText').textContent = txt;
     if (e.results[0].isFinal) matchVoice(txt);
   };
-  recognition.onend = () => stopVoice();
-  recognition.onerror = () => stopVoice();
-  recognition.start();
+  recognition.onend = () => {
+    if (isListening) stopVoice();
+  };
+  recognition.onerror = (e) => {
+    console.error('Speech recognition error', e.error);
+    stopVoice();
+  };
+  
+  try {
+    recognition.start();
+  } catch (e) {
+    console.error('Speech recognition start failed', e);
+    isListening = false;
+  }
 }
 
 function stopVoice() {
   isListening = false;
-  if (recognition) { try { recognition.stop(); } catch(e){} }
+  if (recognition) { 
+    try { recognition.stop(); } catch(e){} 
+  }
   
   // reset both buttons states
   document.querySelectorAll('.voice-btn').forEach(btn=>btn.classList.remove('listening'));
@@ -2371,7 +2399,9 @@ function stopVoice() {
     document.getElementById('voiceSubIntl').textContent = '「叫救護車」「我出車禍」「幫我報警」';
   }
   
-  setTimeout(() => document.getElementById('transcriptBox').classList.remove('show'), 2500);
+  setTimeout(() => {
+    if (!isListening) document.getElementById('transcriptBox').classList.remove('show');
+  }, 2500);
 }
 
 function matchVoice(txt) {
