@@ -525,7 +525,7 @@ a { text-decoration: none; color: inherit; }
       </button>
       <button class="s-card c-amber" onclick="startFlow('robbery')">
         <div class="card-dot"></div><div class="card-icon-bg">🚨</div>
-        <div class="card-name">被搶<br>遭竊</div><div class="card-sub">Robbery · 緊急</div>
+        <div class="card-name">被搶、遭竊<br>跟蹤、偷拍</div><div class="card-sub">Robbery / Stalking</div>
       </button>
     </div>
 
@@ -753,7 +753,7 @@ a { text-decoration: none; color: inherit; }
     <button class="lang-card" onclick="showPhrase('police')"><div class="lang-situation">報警</div><div class="lang-zh">請幫我叫警察</div><div class="lang-en">Please call the police! I need help.</div></button>
     <button class="lang-card" onclick="showPhrase('crash')"><div class="lang-situation">車禍</div><div class="lang-zh">我出了車禍，有人受傷</div><div class="lang-en">There has been a car accident. Someone is injured.</div></button>
     <button class="lang-card" onclick="showPhrase('lost')"><div class="lang-situation">迷路</div><div class="lang-zh">我迷路了，請問這裡是哪裡？</div><div class="lang-en">I am lost. Can you tell me where I am?</div></button>
-    <button class="lang-card" onclick="showPhrase('robbery')"><div class="lang-situation">遭搶遭竊</div><div class="lang-zh">我剛被搶劫，請幫我報警</div><div class="lang-en">I have been robbed. Please call the police.</div></button>
+    <button class="lang-card" onclick="showPhrase('robbery')"><div class="lang-situation">遭搶、遭竊、跟蹤、偷拍</div><div class="lang-zh">有人搶劫/跟蹤/偷拍我，請幫忙</div><div class="lang-en">I'm being followed/robbed/harassed. Please help me.</div></button>
     <button class="lang-card" onclick="showPhrase('hospital')"><div class="lang-situation">送醫院</div><div class="lang-zh">請帶我去最近的醫院</div><div class="lang-en">Please take me to the nearest hospital.</div></button>
     <button class="lang-card" onclick="showPhrase('insurance')"><div class="lang-situation">保險</div><div class="lang-zh">我有旅遊保險，請給我收據和診斷書</div><div class="lang-en">I have travel insurance. Please give me a receipt and medical report.</div></button>
     <button class="lang-card" onclick="showPhrase('allergy')"><div class="lang-situation">過敏藥物</div><div class="lang-zh">我對某些藥物過敏，請治療前確認</div><div class="lang-en">I am allergic to certain medications. Please check before treating me.</div></button>
@@ -814,6 +814,38 @@ a { text-decoration: none; color: inherit; }
   </div>
 </div>
 
+<!-- Intl Action Selection Dialog -->
+<div class="flow-overlay" id="overlayIntlAction">
+  <div class="ov-topbar">
+    <div class="ov-back-nav" style="visibility:hidden">
+      <div class="ov-back-icon">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress" style="visibility:hidden"><div class="ov-fill"></div></div>
+      <div class="ov-counter">語音辨識成功</div>
+    </div>
+    <div class="ov-close" onclick="closeOverlay('overlayIntlAction')">✕</div>
+  </div>
+  <div class="ov-scroll" style="display:flex;flex-direction:column;justify-content:center;min-height:70vh;text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">🌍</div>
+    <h2 style="font-family:var(--display);font-size:24px;margin-bottom:8px;" id="intlActionTitle">您遇到什麼狀況？</h2>
+    <p style="font-size:15px;color:var(--ink-2);margin-bottom:32px;">請選擇您需要的協助方式：</p>
+    
+    <button class="s-card c-red" style="padding:20px;margin-bottom:16px;align-items:center;text-align:center;" onclick="doIntlActionFlow()">
+      <div class="card-icon-bg" style="width:54px;height:54px;font-size:28px;">📖</div>
+      <div class="card-name" style="font-size:18px;margin-top:4px;">查看緊急應變步驟</div>
+      <div class="card-sub" style="font-size:14px;opacity:0.6;">了解現在該做什麼、如何自救</div>
+    </button>
+
+    <button class="s-card c-blue" style="padding:20px;align-items:center;text-align:center;" onclick="doIntlActionLang()">
+      <div class="card-icon-bg" style="width:54px;height:54px;font-size:28px;">🗣</div>
+      <div class="card-name" style="font-size:18px;margin-top:4px;">顯示語言求救翻譯卡</div>
+      <div class="card-sub" style="font-size:14px;opacity:0.6;">全螢幕英文顯示，讓當地人看</div>
+    </button>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // REGION & COUNTRY DATA
@@ -843,6 +875,7 @@ const COUNTRIES = [
   { code:'NZ', flag:'🇳🇿', name:'紐西蘭', amb:'111', pol:'111', fire:'111' },
   { code:'SG', flag:'🇸🇬', name:'新加坡', amb:'995', pol:'999', fire:'995' },
   { code:'HK', flag:'🇭🇰', name:'香港', amb:'999', pol:'999', fire:'999' },
+  { code:'TW', flag:'🇹🇼', name:'台灣', amb:'119', pol:'110', fire:'119' },
   { code:'KR', flag:'🇰🇷', name:'韓國', amb:'119', pol:'112', fire:'119' },
   { code:'TH', flag:'🇹🇭', name:'泰國', amb:'1669', pol:'191', fire:'199' },
   { code:'VN', flag:'🇻🇳', name:'越南', amb:'115', pol:'113', fire:'114' },
@@ -882,6 +915,9 @@ const PHRASES = {
   hospital:  { zh:'請帶我去最近的醫院', en:'Please take me to the nearest hospital.' },
   insurance: { zh:'我有旅遊保險，請給我收據和診斷書', en:'I have travel insurance. Please give me a receipt and medical report.' },
   allergy:   { zh:'我對以下藥物過敏，請勿使用', en:'I am allergic to certain medications. Please check before treating me.' },
+  passport:  { zh:'我的護照遺失了，請幫忙', en:'My passport is lost or stolen. Please help me.' },
+  stalking:  { zh:'有人在跟蹤我，請幫忙', en:'Someone is following me. Please help!' },
+  peeping:   { zh:'有人在偷拍/騷擾我，請幫我', en:'Someone is secretly filming or harassing me. Please help!' }
 };
 
 // ── INTL FLOWS (international versions of key scenarios) ──
@@ -1211,6 +1247,7 @@ function geoToCountry(lat, lng) {
   if (lat>47&&lat<55&&lng>6&&lng<15) return 'DE';
   if (lat>36&&lat<47&&lng>6&&lng<18) return 'IT';
   if (lat>35&&lat<44&&lng>-9&&lng<3) return 'ES';
+  if (lat>21&&lat<26&&lng>119&&lng<123) return 'TW';
   if (lat>1&&lat<2&&lng>103&&lng<105) return 'SG';
   if (lat>22&&lat<23&&lng>113&&lng<115) return 'HK';
   if (lat>33&&lat<39&&lng>125&&lng<130) return 'KR';
@@ -1570,40 +1607,140 @@ const FLOWS = {
   },
 
   robbery: {
-    name: '被搶遭竊',
-    urgent: null,
-    steps: [
+    name: '遭竊 / 跟蹤 / 偷拍',
+    assess: {
+      calm: '先深呼吸。你現在安全嗎？',
+      question: '請確認目前的狀況：',
+      options: [
+        { e:'👀', main:'有人在跟蹤我', sub:'感覺被尾隨', next:'steps_stalking', badge:'urgent' },
+        { e:'📸', main:'發現被偷拍', sub:'被偷拍或性騷擾', next:'steps_peeping', badge:'urgent' },
+        { e:'🏃', main:'剛被搶劫', sub:'歹徒剛離開', next:'steps_robbery', badge:'urgent' },
+        { e:'👜', main:'東西被偷了', sub:'才發現遺失', next:'steps_theft', badge:'normal' },
+      ]
+    },
+    steps_stalking: [
       {
-        badge: '首先',
+        badge: '立刻做', badgeType: 'urgent',
+        calm: '保持冷靜，不要往人少的地方走。',
+        title: '走向人群、\n進入明亮的便利商店',
+        detail: '立刻改變原本的路線，走向人多、明亮的地方（例如便利商店、速食店、捷運站）。\n\n進店後直接走向櫃檯，告訴店員：「外面有人在跟蹤我，可以讓我在這裡待一下嗎？」',
+        warn: '絕對不要直接回家，也不要走進暗巷或沒有出口的地方。',
+        btnText: '我已經在安全的人群中了',
+      },
+      {
+        badge: '步驟 2', badgeType: 'urgent',
+        calm: '你做得很好，現在尋求協助。',
+        title: '打給親友或 110，\n保持通話狀態',
+        detail: '拿起手機撥打給家人、朋友，或是直接撥打 110/當地報案電話。\n\n即使接通後不方便說話，也可以讓警察聽見周圍的聲音。大聲說出你現在的位置（例如：「我現在在某某路口的 7-11」），讓跟蹤者知道你已經聯絡救援。',
+        tip: '你可以假裝在跟人視訊通話，將鏡頭稍微對準後方，這通常能嚇退跟蹤者。',
+        btnText: '已聯絡協助，我也很安全',
+      },
+      {
+        badge: '步驟 3',
+        calm: '等待救援到來。',
+        title: '在原地等待，\n不要輕易離開',
+        detail: '在警察或親友到達之前，留在剛剛求助的商店內。\n\n如果跟蹤者還在外面徘徊，請店員協助注意，或用手機偷偷拍下對方的特徵（衣著、身高、特徵）。\n\n直到警察抵達或親友來接你，才離開安全的室內。',
+        btnText: '救援已抵達',
+      }
+    ],
+    steps_peeping: [
+      {
+        badge: '立刻做', badgeType: 'urgent',
+        calm: '不要直接起衝突，尋求第三方介入。',
+        title: '大聲求助、\n吸引旁人注意',
+        detail: '如果你在捷運、公車或公共場所，大聲說：「你在拍什麼？」或是大喊「請幫我報警」，讓周遭的人注意到他。\n\n立刻移動到司機旁或人多的地方，不要讓自己陷入一對一的危險環境。',
+        btnText: '已移動到安全的人群中',
+      },
+      {
+        badge: '步驟 2',
+        calm: '保留證據是最重要的一環。',
+        title: '請旁人協助報案、\n記下對方特徵',
+        detail: '如果安全允許，用自己的手機反拍對方的長相與衣著特徵。\n\n請旁人幫忙撥打 110，或按下捷運/公車的緊急對講機通報站務人員。\n\n**強烈警告：** 不要嘗試自行搶奪對方手機或拉扯，以免引發肢體衝突而受傷。',
+        tip: '如果對方試圖逃跑，記下他逃走的方向與身體特徵。',
+        btnText: '已完成通報並記下特徵'
+      },
+      {
+        badge: '步驟 3',
+        calm: '交給警察處理。',
+        title: '等待警方抵達，\n不要讓他刪除照片',
+        detail: '如果對方被民眾攔下，請務必等到警察到場。\n\n**非常重要**：在警察來之前，即使對方道歉，也絕對不要讓他刪除手機裡的照片。刪除等於破壞證據，必須由警方來查扣他的手機（手機內的「最近刪除」或雲端才是真正的證據）。',
+        btnText: '已交由警方處理'
+      }
+    ],
+    steps_robbery: [
+      {
+        badge: '首先', badgeType: 'urgent',
         calm: '你現在安全了嗎？先確認這個。',
         title: '移到安全、\n有人的地方',
-        detail: '走進便利商店、捷運站、任何有人的公共場所。如果感覺對方還在附近，直接告訴店員發生了什麼事。\n\n不要獨自走回家。',
+        detail: '歹徒剛離開，立刻走進便利商店、捷運站、任何有人的公共場所。如果感覺對方還在附近，直接告訴店員發生了什麼事。\n\n不要試圖去追歹徒，保護自己最重要。',
         btnText: '我在安全的地方了',
       },
       {
-        badge: '步驟 2 · 報警',
+        badge: '步驟 2 · 報警', badgeType: 'urgent',
         calm: '做這件事才能保護你的權益。',
-        title: '撥打 110 報案，\n取得報案三聯單',
-        detail: '告訴警察：\n① 事發地點和大概時間\n② 歹徒人數和特徵（身高、服裝、口音）\n③ 失竊物品清單\n④ 逃跑方向和交通工具\n\n報案結束後，向警察索取「報案三聯單」——補辦證件和保險理賠都需要。',
+        title: '撥打 110 報案，\n記下歹徒特徵',
+        detail: '告訴警察：\n① 事發地點和大概時間\n② 歹徒人數和特徵（身高、服裝、口音）\n③ 逃跑方向和交通工具（車牌顏色）\n\n抵達派出所後，向警察索取「報案三聯單」——補辦證件和保險理賠都需要。',
         tip: '就算東西找不回來，報案紀錄也很重要。',
         btnText: '已報案，取得三聯單',
       },
       {
         badge: '步驟 3 · 緊急掛失',
         calm: '按照順序，一個一個來。',
-        title: '掛失重要物品',
-        detail: '根據你失去的東西：\n\n**手機被搶** → 立刻開啟遠端鎖定\niPhone：iCloud.com → 尋找 → 標記遺失\nAndroid：myaccount.google.com → 尋找我的裝置\n\n**信用卡/金融卡** → 打背面客服電話掛失\n\n**身分證** → 向任一戶政事務所掛失\n\n**門號** → 去電信門市或打客服掛失',
+        title: '手機 / 信用卡 / 證件',
+        detail: '根據你失去的東西：\n\n**手機被搶** → 立刻開啟遠端鎖定\n**信用卡/金融卡** → 打背面客服電話掛失\n**身分證** → 向任一戶政事務所掛失\n**門號** → 去電信門市或打客服掛失',
         btnText: '重要物品已掛失',
+      },
+    ],
+    steps_theft: [
+      {
+        badge: '步驟 1 · 確認',
+        calm: '先仔細回想剛才去過哪裡。',
+        title: '沿路尋找，\n詢問遺失物中心',
+        detail: '如果是剛掉的，沿著原路找回去。如果是在車站、百貨公司，立刻去服務台詢問。\n\n確認東西是真的被偷了，還是只是自己不小心遺落。',
+        btnText: '確認找不到了',
+      },
+      {
+        badge: '步驟 2 · 掛失', badgeType: 'urgent',
+        calm: '按照順序，一個一個來。',
+        title: '掛失重要物品',
+        detail: '根據你失去的東西：\n\n**手機被偷** → 立刻開啟遠端鎖定 (iCloud / Google Find My Device)\n**信用卡/金融卡** → 打背面客服電話掛失 (最重要！立刻做)\n**身分證** → 向任一戶政事務所掛失\n**護照 (若在國外)** → 聯絡當地大使館或尋求警方協助',
+        btnText: '重要物品已掛失',
+      },
+      {
+        badge: '步驟 3 · 報案',
+        calm: '做這件事才能保護你的權益。',
+        title: '去最近的警察局備案',
+        detail: '即使找回來的機率不高，報案依然是必須的（尤其是證件遺失，以免被盜用）。\n\n告訴警察：\n① 大約遺失的地點和時間\n② 失竊物品清單\n向警察索取「報案三聯單」以供日後證明。',
+        tip: '如果是護照遺失，報案證明是補辦護照的必備文件。',
+        btnText: '已完成報案',
       },
     ],
     done: {
       title: '緊急處理完成',
       sub: '最困難的部分已經結束。\n還有一些後續要跟進。',
       followups: [
-        { name: '補辦身分證', detail: '攜帶報案三聯單到戶政事務所' },
-        { name: '補辦健保卡', detail: '攜帶身分證到健保署或藥局辦理' },
+        { name: '補辦身分證或護照', detail: '攜帶報案三聯單辦理' },
+        { name: '補辦信用卡與健保卡', detail: '確認盜刷狀況並申請新卡' },
         { name: '如有保險，向保險公司申請理賠', detail: '需要報案三聯單' },
-        { name: '告知家人或朋友', detail: '讓身邊的人知道你的狀況' },
+        { name: '告知家人或朋友', detail: '讓身邊的人知道你的狀況並協助' },
+      ]
+    },
+    done_stalking: {
+      title: '您已經安全了',
+      sub: '後續為了保護自己，請多加留意。',
+      followups: [
+        { name: '更換回家路線', detail: '最近幾天改變通勤的路線或時間' },
+        { name: '與家人朋友保持聯繫', detail: '開啟手機的位置共享功能' },
+        { name: '如有需要，聲請保護令', detail: '若知道對方身分，可向警方尋求跟騷法協助' },
+      ]
+    },
+    done_peeping: {
+      title: '處置完成',
+      sub: '您很勇敢。\n後續要注意證據保全與心理狀態。',
+      followups: [
+        { name: '跟進警方處理進度', detail: '確認對方手機是否已被扣押取證' },
+        { name: '尋求專業心理支持', detail: '遭遇此類事件可能造成創傷，不要獨自承受' },
+        { name: '留意網路平台', detail: '防範未經同意的影像散佈，若發現可求助 iWIN 或私密影像防護網' },
       ]
     }
   },
@@ -2060,17 +2197,21 @@ function handleAssess(idx) {
 
   // Named step variants
   const stepsMap = {
-    'steps':           flow.steps,
-    'steps_mild':      flow.steps_mild    || flow.steps,
-    'steps_injury':    flow.steps_injury  || flow.steps,
-    'steps_conscious': flow.steps_conscious || flow.steps,
-    'steps_cough':     flow.steps_cough   || flow.steps,
-    'steps_inwater':   flow.steps_inwater || flow.steps,
-    'steps_bruise':    flow.steps_bruise  || flow.steps,
-    'steps_puncture':  flow.steps_puncture || flow.steps,
+    'steps':           { steps: flow.steps,           done: flow.done },
+    'steps_mild':      { steps: flow.steps_mild    || flow.steps, done: flow.done },
+    'steps_injury':    { steps: flow.steps_injury  || flow.steps, done: flow.done },
+    'steps_conscious': { steps: flow.steps_conscious || flow.steps, done: flow.done },
+    'steps_cough':     { steps: flow.steps_cough   || flow.steps, done: flow.done },
+    'steps_inwater':   { steps: flow.steps_inwater || flow.steps, done: flow.done },
+    'steps_bruise':    { steps: flow.steps_bruise  || flow.steps, done: flow.done },
+    'steps_puncture':  { steps: flow.steps_puncture || flow.steps, done: flow.done },
+    'steps_stalking':  { steps: flow.steps_stalking || flow.steps, done: flow.done_stalking || flow.done },
+    'steps_peeping':   { steps: flow.steps_peeping || flow.steps, done: flow.done_peeping || flow.done },
+    'steps_robbery':   { steps: flow.steps_robbery || flow.steps, done: flow.done },
+    'steps_theft':     { steps: flow.steps_theft   || flow.steps, done: flow.done },
   };
-  const chosen = stepsMap[next] || flow.steps;
-  startSteps(chosen, flow.done);
+  const chosen = stepsMap[next] || { steps: flow.steps, done: flow.done };
+  startSteps(chosen.steps, chosen.done);
 }
 
 function startSteps(steps, done) {
@@ -2288,7 +2429,7 @@ const VOICE_MAP = [
   { id:'choke',     words:['哽噎','噎到','嗆到','喘不過氣','異物','卡住'] },
   { id:'crash',     words:['車禍','撞車','追撞','事故','碰撞','出事'] },
   { id:'burn',      words:['燙傷','燒傷','灼傷','燙到','燒到','熱水','火'] },
-  { id:'robbery',   words:['搶劫','被搶','遭竊','小偷','偷走','搶走','錢包'] },
+  { id:'robbery',   words:['搶劫','被搶','遭竊','小偷','偷走','搶走','錢包','護照','不見','遺失','跟蹤','尾隨','騷擾','偷拍'] },
   { id:'drowning',  words:['溺水','落水','掉進水','快溺'] },
   { id:'abrasion',  words:['擦傷','摔車','跌倒','破皮','撞傷','瘀青','擦破'] },
   { id:'sprain',    words:['扭傷','扭到','挫傷','腳踝','手腕扭','扭腳'] },
@@ -2296,15 +2437,43 @@ const VOICE_MAP = [
 ];
 
 const INTL_VOICE_MAP = [
-  { id:'ambulance', words:['救護車','叫救護','119','急救'] },
-  { id:'police',    words:['警察','報警','110','犯罪','報案'] },
-  { id:'crash',     words:['車禍','撞車','事故','追撞'] },
-  { id:'lost',      words:['迷路','哪裡','找路'] },
-  { id:'robbery',   words:['搶劫','遭竊','小偷','偷走','錢包','被搶'] },
-  { id:'hospital',  words:['醫院','生病','看醫生','受傷送醫院'] },
-  { id:'insurance', words:['保險','理賠','收據','診斷'] },
-  { id:'allergy',   words:['過敏','藥物','打針'] },
+  { phraseId:'ambulance', flowId: 'cpr',   words:['救護車','叫救護','119','急救'] },
+  { phraseId:'police',    flowId: 'crash', words:['警察','報警','110','犯罪','報案'] },
+  { phraseId:'crash',     flowId: 'crash', words:['車禍','撞車','事故','追撞'] },
+  { phraseId:'lost',      flowId: null,    words:['迷路','哪裡','找路','迷失'] },
+  { phraseId:'robbery',   flowId: 'robbery', words:['搶劫','遭竊','小偷','偷走','錢包','被搶'] },
+  { phraseId:'stalking',  flowId: 'robbery', words:['跟蹤','尾隨'] },
+  { phraseId:'peeping',   flowId: 'robbery', words:['偷拍','騷擾'] },
+  { phraseId:'passport',  flowId: null,    words:['護照','不見','遺失','丟了'] },
+  { phraseId:'hospital',  flowId: null,    words:['醫院','生病','看醫生','受傷送醫院'] },
+  { phraseId:'insurance', flowId: null,    words:['保險','理賠','收據','診斷'] },
+  { phraseId:'allergy',   flowId: null,    words:['過敏','藥物','打針'] },
 ];
+
+let pendingIntlAction = null;
+
+function promptIntlAction(phraseId, flowId) {
+  pendingIntlAction = { phraseId, flowId };
+  document.getElementById('intlActionTitle').textContent = `已辨識關鍵字`;
+  openOverlay('overlayIntlAction');
+}
+
+function doIntlActionFlow() {
+  closeOverlay('overlayIntlAction');
+  if (pendingIntlAction && pendingIntlAction.flowId) {
+    setTimeout(() => startFlow(pendingIntlAction.flowId), 300);
+  } else {
+    alert('此情境目前沒有預設的緊急應變步驟，即將為您顯示翻譯字卡。');
+    setTimeout(() => doIntlActionLang(), 800);
+  }
+}
+
+function doIntlActionLang() {
+  closeOverlay('overlayIntlAction');
+  if (pendingIntlAction && pendingIntlAction.phraseId) {
+    setTimeout(() => showPhrase(pendingIntlAction.phraseId), 300);
+  }
+}
 
 function toggleVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2412,15 +2581,28 @@ function matchVoice(txt) {
       document.getElementById('transcriptMatch').style.display = 'flex';
       document.getElementById('matchLabel').textContent = name;
       setTimeout(() => startFlow(m.id), 700);
+    } else {
+      showUnrecognizedFeedback();
     }
   } else {
     const m = INTL_VOICE_MAP.find(p => p.words.some(w => txt.includes(w)));
     if (m) {
       document.getElementById('transcriptMatch').style.display = 'flex';
-      document.getElementById('matchLabel').textContent = '切換至英文求救卡';
-      setTimeout(() => showPhrase(m.id), 700);
+      document.getElementById('matchLabel').textContent = '已找到對應求救卡';
+      setTimeout(() => promptIntlAction(m.phraseId, m.flowId), 700);
+    } else {
+      showUnrecognizedFeedback();
     }
   }
+}
+
+function showUnrecognizedFeedback() {
+  const textBox = document.getElementById('transcriptText');
+  textBox.innerHTML = `<span style="color:var(--ink-2)">聽不到關鍵字，請試著說：<br><b style="color:var(--ink)">「車禍」、「救護車」或「護照不見」</b></span>`;
+  document.getElementById('transcriptMatch').style.display = 'none';
+  // Keep the overlay up a bit longer so the user can read it before closing
+  isListening = false;
+  try { recognition.stop(); } catch(e){}
 }
 </script>
 </body>
