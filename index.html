@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SOS 緊急應變</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F5F2;
+  --surface: #FFFFFF;
+  --border: #E8E4DF;
+  --border-strong: #D0CAC3;
+  --ink: #1A1714;
+  --ink-2: #5A5450;
+  --ink-3: #9A9490;
+  --red: #E8271A;
+  --red-bg: #FEF2F1;
+  --red-border: #FACAC7;
+  --orange: #E85A1A;
+  --orange-bg: #FEF4EE;
+  --orange-border: #F9C9A8;
+  --amber: #C87800;
+  --amber-bg: #FEFAEE;
+  --amber-border: #F0DFA0;
+  --blue: #1A5AE8;
+  --blue-bg: #EEF3FE;
+  --blue-border: #A8BEFA;
+  --green: #1A8A4A;
+  --green-bg: #EEFEF5;
+  --green-border: #A0E4C0;
+  --purple: #6B1AE8;
+  --purple-bg: #F4EEFE;
+  --purple-border: #C8A8FA;
+  --sans: 'Inter', 'Noto Sans TC', sans-serif;
+  --display: 'Inter', 'Noto Sans TC', sans-serif;
+  --mono: 'Inter', 'Noto Sans TC', monospace;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 26px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+button { font-family: var(--sans); cursor: pointer; border: none; background: none; }
+a { text-decoration: none; color: inherit; }
+
+/* ── STICKY HEADER ── */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.logo-wrap { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+.logo-mark {
+  width: 30px; height: 30px; background: var(--red);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative;
+}
+.logo-cross::before, .logo-cross::after {
+  content: ''; position: absolute; background: white; border-radius: 2px;
+}
+.logo-cross::before { width: 16px; height: 5px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.logo-cross::after  { width: 5px; height: 16px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.logo-name { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: -0.3px; white-space: nowrap; }
+
+.region-toggle {
+  display: flex; gap: 3px;
+  background: var(--border); border-radius: 20px; padding: 3px;
+  flex-shrink: 0;
+}
+.region-btn {
+  padding: 5px 11px; border-radius: 16px;
+  font-family: var(--sans); font-size: 15px; font-weight: 400;
+  cursor: pointer; transition: all 0.18s; color: var(--ink-3);
+  background: transparent; white-space: nowrap;
+}
+.region-btn.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.region-btn.active.intl { color: var(--blue); }
+
+/* ── MAIN SCROLLABLE AREA ── */
+.main-scroll {
+  padding: 20px 18px 60px;
+}
+
+/* ── HERO ── */
+.hero { margin-bottom: 22px; }
+.hero-title {
+  font-family: var(--display); font-size: 32px; font-weight: 600;
+  letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 6px;
+}
+.hero-title em { font-style: normal; color: var(--red); }
+.hero-sub { font-size: 15px; color: var(--ink-2); font-weight: 400; line-height: 1.6; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--sans); font-size: 15px; font-weight: 400;
+  color: var(--ink-3); text-transform: uppercase;
+  margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── VOICE BUTTON ── */
+.voice-btn {
+  width: 100%; background: var(--red); border: none;
+  border-radius: var(--r-xl); padding: 18px 20px;
+  cursor: pointer; display: flex; align-items: center; gap: 14px;
+  transition: all 0.15s;
+  box-shadow: 0 4px 20px rgba(232,39,26,0.22), 0 1px 3px rgba(0,0,0,0.08);
+  position: relative; overflow: hidden;
+}
+.voice-btn::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.voice-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(232,39,26,0.32); }
+.voice-btn:active { transform: scale(0.99); }
+.voice-btn.listening { background: #C41A10; animation: vpulse 1.2s infinite; }
+@keyframes vpulse {
+  0%,100%{ box-shadow: 0 4px 20px rgba(232,39,26,0.3); }
+  50%{ box-shadow: 0 4px 40px rgba(232,39,26,0.6), 0 0 0 8px rgba(232,39,26,0.1); }
+}
+.v-mic { width: 48px; height: 48px; background: rgba(255,255,255,0.16); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.voice-btn.listening .v-mic { animation: micpulse 0.6s infinite alternate; }
+@keyframes micpulse { from{transform:scale(1)} to{transform:scale(1.12)} }
+.v-copy { flex: 1; }
+.v-main { font-family: var(--display); font-size: 20px; font-weight: 600; color: white; letter-spacing: -0.3px; line-height: 1.1; }
+.v-sub  { font-size: 15px; color: rgba(255,255,255,0.68); margin-top: 4px; font-weight: 400; }
+.v-arrow { color: rgba(255,255,255,0.45); font-size: 20px; flex-shrink: 0; }
+
+.transcript {
+  margin-top: 8px; background: var(--surface);
+  border: 1.5px solid var(--red-border); border-radius: var(--r-md);
+  padding: 11px 14px; display: none;
+}
+.transcript.show { display: block; }
+.ts-label { font-family:var(--sans); font-size:15px; color:var(--red); margin-bottom:5px; font-weight: 400; }
+.ts-text  { font-size:16px; color:var(--ink); line-height:1.6; }
+.ts-match { display:flex; align-items:center; gap:6px; margin-top:8px; padding-top:8px; border-top:1px solid var(--red-border); font-size:15px; color:var(--red); font-weight: 400; }
+
+/* ── EMERGENCY CARD GRID ── */
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.s-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 16px 14px 14px;
+  cursor: pointer; transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  display: flex; flex-direction: column; gap: 10px;
+  position: relative; overflow: hidden; text-align: left;
+}
+.s-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.s-card:active { transform: scale(0.98); }
+.card-icon-bg { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.card-name { font-family: var(--display); font-size: 15px; font-weight: 600; line-height: 1.25; }
+.card-sub  { font-family: var(--sans); font-size: 15px; font-weight: 400; opacity: 0.45; text-transform: uppercase; }
+.card-dot  { position: absolute; top: 12px; right: 12px; width: 7px; height: 7px; border-radius: 50%; }
+.c-red    { border-color: var(--red-border); } .c-red .card-icon-bg { background: var(--red-bg); } .c-red .card-dot { background: var(--red); } .c-red:hover { border-color: var(--red); background: var(--red-bg); }
+.c-orange { border-color: var(--orange-border); } .c-orange .card-icon-bg { background: var(--orange-bg); } .c-orange .card-dot { background: var(--orange); } .c-orange:hover { border-color: var(--orange); background: var(--orange-bg); }
+.c-amber  { border-color: var(--amber-border); } .c-amber .card-icon-bg { background: var(--amber-bg); } .c-amber .card-dot { background: var(--amber); } .c-amber:hover { border-color: var(--amber); background: var(--amber-bg); }
+.c-blue   { border-color: var(--blue-border); } .c-blue .card-icon-bg { background: var(--blue-bg); } .c-blue .card-dot { background: var(--blue); } .c-blue:hover { border-color: var(--blue); background: var(--blue-bg); }
+.c-green  { border-color: var(--green-border); } .c-green .card-icon-bg { background: var(--green-bg); } .c-green .card-dot { background: var(--green); } .c-green:hover { border-color: var(--green); background: var(--green-bg); }
+.c-purple { border-color: var(--purple-border); } .c-purple .card-icon-bg { background: var(--purple-bg); } .c-purple .card-dot { background: var(--purple); } .c-purple:hover { border-color: var(--purple); background: var(--purple-bg); }
+
+/* ── INJURY LIST ── */
+.inj-grid { display: flex; flex-direction: column; gap: 8px; }
+.inj-card {
+  background: var(--surface); border: 1.5px solid var(--green-border);
+  border-radius: var(--r-md); padding: 13px 15px;
+  cursor: pointer; display: flex; align-items: center; gap: 13px;
+  transition: all 0.15s; text-align: left; width: 100%;
+}
+.inj-card:hover { border-color: var(--green); background: var(--green-bg); }
+.inj-card:active { transform: scale(0.99); }
+.inj-icon { font-size: 24px; flex-shrink: 0; }
+.inj-name { font-family: var(--display); font-size: 15px; font-weight: 600; }
+.inj-sub  { font-family: var(--sans); font-size: 15px; color: var(--ink-3); margin-top: 2px; font-weight: 400; }
+
+/* ── INTL SPECIFIC ── */
+.intl-emergency-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 18px; margin-bottom: 2px;
+}
+.iec-country { font-family: var(--sans); font-size: 15px; color: var(--ink-3); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.iec-change { margin-left: auto; font-size: 15px; color: var(--blue); cursor: pointer; text-transform: none; letter-spacing: 0; }
+.iec-numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.iec-num {
+  background: var(--bg); border-radius: var(--r-md); padding: 10px 8px;
+  text-align: center; text-decoration: none; display: flex;
+  flex-direction: column; gap: 4px; transition: all 0.15s;
+  border: 1px solid var(--border);
+}
+.iec-num:hover { border-color: var(--red-border); background: var(--red-bg); }
+.iec-num:active { transform: scale(0.97); }
+.iec-num-icon { font-size: 18px; }
+.iec-num-label { font-family: var(--sans); font-size: 15px; color: var(--ink-3); font-weight: 400; }
+.iec-num-val { font-size: 18px; font-weight: 900; color: var(--red); font-family: var(--mono); }
+.tw-backup-card {
+  background: var(--surface); border: 1.5px solid var(--amber-border);
+  border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 2px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.tw-backup-title { font-size: 15px; font-weight: 400; margin-bottom: 6px; }
+.tw-backup-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.tw-backup-item:last-child { border-bottom: none; }
+.tw-backup-name { font-size: 15px; color: var(--ink-2); }
+.tw-backup-num  { font-family: var(--sans); font-size: 15px; font-weight: 400; color: var(--ink); text-decoration: none; }
+.gps-detect { display: none; align-items: center; gap: 5px; font-family: var(--sans); font-size: 15px; color: var(--ink-3); margin-top: 6px; }
+.gps-detect-dot { width:5px; height:5px; border-radius:50%; background:var(--green); flex-shrink:0; }
+
+/* Language rescue list card */
+.lang-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 16px 18px;
+  margin-bottom: 8px; cursor: pointer; transition: all 0.15s; display: block; width: 100%; text-align: left;
+}
+.lang-card:hover { border-color: var(--blue-border); background: var(--blue-bg); }
+.lang-card:active { transform: scale(0.99); }
+.lang-situation { font-family: var(--sans); font-size: 15px; color: var(--ink-3); text-transform: uppercase; margin-bottom: 6px; }
+.lang-zh { font-size: 15px; font-weight: 400; color: var(--ink-2); margin-bottom: 6px; }
+.lang-en { font-size: 15px; font-weight: 600; color: var(--blue); line-height: 1.4; font-family: var(--display); }
+
+/* Country picker */
+.country-item {
+  display: flex; align-items: center; gap: 12px; padding: 13px 4px;
+  border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s;
+}
+.country-item:hover { background: var(--blue-bg); border-radius: var(--r-sm); }
+.country-item:last-child { border-bottom: none; }
+
+/* ── FLOW SCREENS (overlays on top, full viewport) ── */
+.flow-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg);
+  z-index: 200;
+  flex-direction: column;
+  overflow: hidden;
+}
+.flow-overlay.open { display: flex; }
+
+/* Urgent overlay */
+#overlayUrgent { background: var(--red); }
+
+/* Shared topbar inside overlays */
+.ov-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; flex-shrink: 0;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.ov-back-nav {
+  display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--ink);
+}
+.ov-back-icon {
+  font-size: 24px; line-height: 1; font-weight: 300; color: var(--ink-2); margin-top: -2px;
+}
+.ov-back-text {
+  font-family: var(--sans); font-size: 16px; font-weight: 600; white-space: nowrap;
+}
+.ov-back-nav:hover .ov-back-text { color: var(--ink-2); }
+.ov-center {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 16px; gap: 4px;
+}
+.ov-progress { width: 100%; max-width: 120px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.ov-fill { height: 100%; background: var(--ink); border-radius: 2px; transition: width 0.4s; }
+.ov-fill.urgent { background: var(--red); }
+.ov-fill.green  { background: var(--green); }
+.ov-counter { font-family: var(--sans); font-size: 13px; color: var(--ink-3); font-weight: 500; white-space: nowrap; }
+.ov-close {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 16px; background: var(--border);
+  color: var(--ink-2); cursor: pointer; font-size: 14px; font-weight: 600; flex-shrink: 0;
+}
+.ov-close:hover { background: var(--border-strong); color: var(--ink); }
+
+/* Scrollable content inside overlay */
+.ov-scroll {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 24px 18px 0;
+}
+.ov-scroll::-webkit-scrollbar { display: none; }
+.ov-foot { padding: 10px 18px 32px; flex-shrink: 0; background: var(--bg); }
+
+/* Step card */
+.step-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-xl); padding: 20px 18px 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05); margin-bottom: 4px;
+}
+.step-card.urgent-card { border-color: var(--red-border); background: var(--red-bg); }
+.step-badge {
+  display: inline-flex; align-items: center;
+  border-radius: 20px; padding: 4px 11px;
+  font-family: var(--sans); font-size: 15px; font-weight: 400; margin-bottom: 12px;
+  background: var(--border); color: var(--ink-2);
+}
+.step-badge.b-urgent { background: var(--red); color: white; }
+.step-badge.b-ok     { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.step-badge.b-warn   { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.step-calm   { font-size: 15px; color: var(--ink-3); margin-bottom: 6px; font-weight: 400; font-style: italic; line-height: 1.5; }
+.step-title  { font-family: var(--sans); font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 10px; }
+.step-detail { font-size: 16px; color: var(--ink-2); line-height: 1.8; font-weight: 300; }
+.step-detail strong { color: var(--ink); font-weight: 700; }
+.warn-box { margin-top: 12px; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--r-sm); padding: 11px 13px; font-size: 15px; color: var(--amber); line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
+.tip-box  { margin-top: 12px; background: var(--blue-bg);  border: 1px solid var(--blue-border);  border-radius: var(--r-sm); padding: 11px 13px; font-size: 15px; color: var(--blue);  line-height: 1.7; display: flex; gap: 8px; align-items: flex-start; }
+
+/* Assess options */
+.assess-opts { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+.assess-opt {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 16px;
+  cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.15s;
+}
+.assess-opt:hover { border-color: var(--ink-3); background: var(--surface); }
+.assess-opt:active { transform: scale(0.99); }
+.assess-opt.opt-urgent { border-color: var(--red-border); }
+.assess-opt.opt-urgent:hover { border-color: var(--red); background: var(--red-bg); }
+.ao-icon { font-size: 22px; flex-shrink: 0; }
+.ao-main { font-size: 16px; font-weight: 700; }
+.ao-sub  { font-size: 15px; color: var(--ink-3); margin-top: 2px; font-weight: 400; }
+.ao-arrow { font-size: 18px; color: var(--ink-3); margin-left: auto; flex-shrink: 0; }
+
+/* Action buttons */
+.primary-btn {
+  width: 100%; padding: 18px;
+  background: var(--ink); color: white; border: none;
+  border-radius: var(--r-lg); font-family: var(--sans);
+  font-size: 18px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 16px rgba(26,23,20,0.15);
+}
+.primary-btn:hover { transform: translateY(-1px); }
+.primary-btn:active { transform: scale(0.99); }
+.primary-btn.btn-green { background: var(--green); box-shadow: 0 4px 16px rgba(26,138,74,0.22); }
+.primary-btn.btn-red   { background: var(--red);   box-shadow: 0 4px 16px rgba(232,39,26,0.22); }
+.secondary-btn {
+  width: 100%; margin-top: 9px; padding: 15px;
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: var(--r-md); font-size: 16px; font-weight: 600;
+  color: var(--ink-2); cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.secondary-btn:hover { border-color: var(--border-strong); color: var(--ink); background: var(--surface); }
+.secondary-btn:active { transform: scale(0.99); }
+.secondary-btn.btn-warn { border-color: var(--red-border); color: var(--red); }
+.secondary-btn.btn-warn:hover { background: var(--red-bg); }
+
+/* Urgent overlay internals */
+.urgent-topbar { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.urgent-label { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.4); }
+.urgent-home-btn { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; color: rgba(255,255,255,0.7); transition: background 0.15s; }
+.urgent-home-btn:hover { background: rgba(255,255,255,0.22); }
+.urgent-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 28px 32px; text-align: center; }
+.urgent-pulse { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 24px; animation: upulse 1.4s infinite; position: relative; }
+.urgent-pulse::after { content:''; position:absolute; inset:-10px; border-radius:50%; border: 2px solid rgba(255,255,255,0.2); animation: uring 1.4s infinite; }
+@keyframes upulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+@keyframes uring  { 0%{transform:scale(1);opacity:.3} 100%{transform:scale(1.45);opacity:0} }
+.urgent-title { font-family: var(--display); font-size: 26px; font-weight: 600; color: white; margin-bottom: 8px; line-height: 1.2; }
+.urgent-sub   { font-size: 16px; color: rgba(255,255,255,0.68); line-height: 1.7; margin-bottom: 28px; font-weight: 300; }
+.urgent-call-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 18px; background: white; color: var(--red); border-radius: var(--r-lg); font-family: var(--sans); font-size: 18px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.12); transition: all 0.15s; }
+.urgent-call-btn:hover { transform: translateY(-1px); }
+.urgent-while { width: 100%; margin-top: 16px; background: rgba(255,255,255,0.1); border-radius: var(--r-md); padding: 14px 16px; display: none; }
+.urgent-while-title { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.45); margin-bottom: 10px; }
+.urgent-while-item  { display: flex; gap: 10px; padding: 6px 0; font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+.urgent-not-now { margin-top: 14px; font-size: 15px; color: rgba(255,255,255,0.55); cursor: pointer; font-family: var(--sans); transition: color 0.15s; }
+.urgent-not-now:hover { color: rgba(255,255,255,0.8); }
+
+/* Done screen internals */
+.done-check {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.done-title { font-family: var(--display); font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px; }
+.done-sub   { font-size: 16px; color: var(--ink-3); line-height: 1.7; font-weight: 300; margin-bottom: 22px; }
+.followup-section-label { font-family: var(--sans); font-size: 15px; color: var(--ink-3); margin-bottom: 10px; font-weight: 400; text-transform: uppercase; }
+.followup-item { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.followup-item:last-child { border-bottom: none; }
+.fu-check { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-top: 1px; font-size: 15px; color: white; transition: all 0.15s; }
+.fu-check.on { background: var(--green); border-color: var(--green); }
+.fu-name   { font-size: 16px; font-weight: 600; }
+.fu-detail { font-size: 15px; color: var(--ink-3); margin-top: 2px; font-weight: 400; }
+.restart-btn { width: 100%; padding: 14px; background: transparent; border: 1.5px solid var(--border); border-radius: var(--r-md); font-size: 16px; font-weight: 600; color: var(--ink-2); cursor: pointer; transition: all 0.15s; margin-top: 6px; }
+.restart-btn:hover { border-color: var(--border-strong); color: var(--ink); background: var(--surface); }
+
+/* Phrase overlay */
+.phrase-overlay {
+  display: none; position: fixed; inset: 0; max-width: 480px; margin: 0 auto;
+  background: var(--blue); z-index: 300;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 28px; text-align: center;
+}
+.phrase-overlay.show { display: flex; }
+.phrase-label { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+.phrase-zh  { font-size: 18px; color: rgba(255,255,255,0.7); margin-bottom: 14px; font-weight: 300; }
+.phrase-en  { font-size: 28px; font-weight: 900; color: white; line-height: 1.25; font-family: var(--display); }
+.phrase-close { margin-top: 36px; font-size: 15px; color: rgba(255,255,255,0.5); cursor: pointer; font-family: var(--sans); }
+
+/* ── CONFIRM DIALOG ── */
+.confirm-backdrop {
+  display: none; position: fixed; inset: 0; max-width: 480px; margin: 0 auto;
+  background: rgba(26,23,20,0.5); z-index: 400;
+  align-items: flex-end; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.confirm-backdrop.show { display: flex; }
+.confirm-sheet {
+  background: var(--surface); border-radius: 24px 24px 0 0;
+  padding: 24px 20px 40px; width: 100%;
+  animation: sheetUp 0.22s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes sheetUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.confirm-title { font-family: var(--display); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.confirm-sub   { font-size: 16px; color: var(--ink-2); font-weight: 400; line-height: 1.6; margin-bottom: 22px; }
+.confirm-btns  { display: flex; flex-direction: column; gap: 10px; }
+.confirm-ok  { padding: 16px; background: var(--red); color: white; border: none; border-radius: var(--r-md); font-size: 16px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+.confirm-cancel { padding: 16px; background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--border); border-radius: var(--r-md); font-size: 16px; font-weight: 400; cursor: pointer; font-family: var(--sans); }
+
+/* Country picker search */
+#countrySearch {
+  width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--r-md); font-size: 15px; font-family: var(--sans);
+  background: var(--surface); margin-bottom: 12px; outline: none;
+}
+#countrySearch:focus { border-color: var(--blue-border); }
+
+/* Animation */
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.flow-overlay.open { animation: fadeUp 0.22s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ════════ STICKY HEADER ════════ -->
+<div class="app-header">
+  <div class="logo-wrap">
+    <div class="logo-mark">
+      <div class="logo-cross" style="position:relative;width:18px;height:18px"></div>
+    </div>
+    <div class="logo-name">SOS 緊急應變</div>
+  </div>
+  <div class="region-toggle">
+    <button class="region-btn active" id="btnTW"   onclick="setRegion('tw')">🇹🇼 台灣</button>
+    <button class="region-btn"        id="btnIntl" onclick="setRegion('intl')">🌍 國外</button>
+  </div>
+</div>
+
+<!-- ════════ MAIN SCROLLABLE CONTENT ════════ -->
+<div class="main-scroll">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-title">發生意外，<em>不用慌。</em></div>
+    <div class="hero-sub" id="heroSub">告訴我發生了什麼，我會一步一步陪你處理。</div>
+    <div class="gps-detect" id="gpsDetect">
+      <span class="gps-detect-dot"></span><span id="gpsDetectLabel">偵測位置中...</span>
+    </div>
+  </div>
+
+  <!-- ── 台灣專區 ── -->
+  <div id="sectionTW">
+    <div class="section-label">語音輸入</div>
+    <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+      <div class="v-mic" id="voiceIcon">🎙️</div>
+      <div class="v-copy">
+        <div class="v-main" id="voiceMain">說出發生什麼事</div>
+        <div class="v-sub"  id="voiceSub">「我出車禍了」「有人燙傷」「朋友昏倒」</div>
+      </div>
+      <div class="v-arrow">›</div>
+    </button>
+    <div class="transcript" id="transcriptBox">
+      <div class="ts-label">▸ 語音辨識</div>
+      <div class="ts-text" id="transcriptText">...</div>
+      <div class="ts-match" id="transcriptMatch" style="display:none">
+        ⚡ <span id="matchLabel"></span> → 自動開啟
+      </div>
+    </div>
+
+    <div class="section-label">緊急情況</div>
+    <div class="card-grid">
+      <button class="s-card c-red" onclick="startFlow('cpr')">
+        <div class="card-dot"></div><div class="card-icon-bg">❤️‍🔥</div>
+        <div class="card-name">有人昏倒<br>失去意識</div><div class="card-sub">CPR · 危急</div>
+      </button>
+      <button class="s-card c-red" onclick="startFlow('choke')">
+        <div class="card-dot"></div><div class="card-icon-bg">😮‍💨</div>
+        <div class="card-name">異物<br>哽噎嗆到</div><div class="card-sub">Choking · 危急</div>
+      </button>
+      <button class="s-card c-orange" onclick="startFlow('crash')">
+        <div class="card-dot"></div><div class="card-icon-bg">🚗</div>
+        <div class="card-name">車禍<br>交通事故</div><div class="card-sub">Traffic · 緊急</div>
+      </button>
+      <button class="s-card c-orange" onclick="startFlow('burn')">
+        <div class="card-dot"></div><div class="card-icon-bg">🔥</div>
+        <div class="card-name">燙傷<br>灼傷</div><div class="card-sub">Burn · 緊急</div>
+      </button>
+      <button class="s-card c-blue" onclick="startFlow('drowning')">
+        <div class="card-dot"></div><div class="card-icon-bg">🌊</div>
+        <div class="card-name">有人溺水</div><div class="card-sub">Drowning · 危急</div>
+      </button>
+      <button class="s-card c-amber" onclick="startFlow('robbery')">
+        <div class="card-dot"></div><div class="card-icon-bg">🚨</div>
+        <div class="card-name">被搶<br>遭竊</div><div class="card-sub">Robbery · 緊急</div>
+      </button>
+    </div>
+
+    <div class="section-label">受傷了，但人還好</div>
+    <div class="inj-grid">
+      <button class="inj-card" onclick="startFlow('abrasion')">
+        <span class="inj-icon">🛵</span>
+        <div><div class="inj-name">擦傷 · 撞傷</div><div class="inj-sub">摔車、跌倒、瘀青</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+      <button class="inj-card" onclick="startFlow('sprain')">
+        <span class="inj-icon">🦶</span>
+        <div><div class="inj-name">扭傷 · 挫傷</div><div class="inj-sub">腳踝、手腕</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+      <button class="inj-card" onclick="startFlow('cut')">
+        <span class="inj-icon">🩹</span>
+        <div><div class="inj-name">割傷 · 刺傷</div><div class="inj-sub">刀、玻璃、釘子</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── 國外專區（預設隱藏）── -->
+  <div id="sectionIntl" style="display:none">
+
+    <div class="section-label">當地緊急電話</div>
+    <div class="intl-emergency-card">
+      <div class="iec-country">
+        <span id="iecFlag">🌍</span>
+        <span id="iecCountryName">偵測位置中...</span>
+        <span class="iec-change" onclick="openCountryPicker()">更換地區 ›</span>
+      </div>
+      <div class="iec-numbers">
+        <a class="iec-num" id="iecAmbulance" href="tel:112">
+          <span class="iec-num-icon">🚑</span>
+          <span class="iec-num-label">救護車</span>
+          <span class="iec-num-val" id="iecAmbNum">112</span>
+        </a>
+        <a class="iec-num" id="iecPolice" href="tel:112">
+          <span class="iec-num-icon">🚔</span>
+          <span class="iec-num-label">警察</span>
+          <span class="iec-num-val" id="iecPolNum">112</span>
+        </a>
+        <a class="iec-num" id="iecFire" href="tel:112">
+          <span class="iec-num-icon">🚒</span>
+          <span class="iec-num-label">消防</span>
+          <span class="iec-num-val" id="iecFireNum">112</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="tw-backup-card">
+      <div style="font-size:22px">🇹🇼</div>
+      <div style="flex:1">
+        <div class="tw-backup-title">台灣後援</div>
+        <div class="tw-backup-item">
+          <span class="tw-backup-name">外交部急難救助（24h）</span>
+          <a class="tw-backup-num" href="tel:+886800085095">0800-085-095</a>
+        </div>
+        <div class="tw-backup-item">
+          <span class="tw-backup-name">當地駐外館處</span>
+          <a class="tw-backup-num" id="twEmbassy" href="tel:+886800085095">查看 ›</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">語言求救</div>
+    <button class="inj-card" style="border-color:var(--blue-border);margin-bottom:8px" onclick="openLangScreen()">
+      <span class="inj-icon">🗣</span>
+      <div>
+        <div class="inj-name" style="color:var(--blue)">讓對方看螢幕求救</div>
+        <div class="inj-sub">英文大字顯示，依情境選擇</div>
+      </div>
+      <span style="margin-left:auto;color:var(--blue);font-size:18px">›</span>
+    </button>
+
+    <div class="section-label">緊急情況</div>
+    <div class="card-grid">
+      <button class="s-card c-red" onclick="startFlow('cpr')">
+        <div class="card-dot"></div><div class="card-icon-bg">❤️‍🔥</div>
+        <div class="card-name">有人昏倒<br>失去意識</div><div class="card-sub">CPR · 危急</div>
+      </button>
+      <button class="s-card c-red" onclick="startFlow('choke')">
+        <div class="card-dot"></div><div class="card-icon-bg">😮‍💨</div>
+        <div class="card-name">異物<br>哽噎嗆到</div><div class="card-sub">Choking · 危急</div>
+      </button>
+      <button class="s-card c-orange" onclick="startFlow('intl_crash')">
+        <div class="card-dot"></div><div class="card-icon-bg">🚗</div>
+        <div class="card-name">車禍<br>交通事故</div><div class="card-sub">國際版 · 緊急</div>
+      </button>
+      <button class="s-card c-orange" onclick="startFlow('burn')">
+        <div class="card-dot"></div><div class="card-icon-bg">🔥</div>
+        <div class="card-name">燙傷<br>灼傷</div><div class="card-sub">Burn · 緊急</div>
+      </button>
+      <button class="s-card c-purple" onclick="startFlow('intl_medical')">
+        <div class="card-dot"></div><div class="card-icon-bg">🏥</div>
+        <div class="card-name">就醫<br>找醫院</div><div class="card-sub">國際版 · 緊急</div>
+      </button>
+      <button class="s-card c-amber" onclick="startFlow('intl_robbery')">
+        <div class="card-dot"></div><div class="card-icon-bg">🚨</div>
+        <div class="card-name">被搶<br>遭竊</div><div class="card-sub">國際版 · 緊急</div>
+      </button>
+    </div>
+
+    <div class="section-label">受傷了，但人還好</div>
+    <div class="inj-grid">
+      <button class="inj-card" onclick="startFlow('abrasion')">
+        <span class="inj-icon">🛵</span>
+        <div><div class="inj-name">擦傷 · 撞傷</div><div class="inj-sub">摔車、跌倒、瘀青</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+      <button class="inj-card" onclick="startFlow('sprain')">
+        <span class="inj-icon">🦶</span>
+        <div><div class="inj-name">扭傷 · 挫傷</div><div class="inj-sub">腳踝、手腕</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+      <button class="inj-card" onclick="startFlow('cut')">
+        <span class="inj-icon">🩹</span>
+        <div><div class="inj-name">割傷 · 刺傷</div><div class="inj-sub">刀、玻璃、釘子</div></div>
+        <span style="margin-left:auto;color:var(--ink-3);font-size:18px">›</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- end .main-scroll -->
+
+<!-- ════════ FLOW OVERLAYS (position:fixed, on top) ════════ -->
+
+<!-- Urgent -->
+<div class="flow-overlay" id="overlayUrgent" style="background:var(--red)">
+  <div class="ov-topbar" style="background:transparent; border-bottom:none;">
+    <div class="ov-back-nav" onclick="goUrgentBack()" style="color:white;">
+      <div class="ov-back-icon" style="color:rgba(255,255,255,0.7);">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress" style="background:rgba(255,255,255,0.2);"><div class="ov-fill urgent" style="width:100%; background:white;"></div></div>
+      <div class="ov-counter" style="color:rgba(255,255,255,0.8);">緊急</div>
+    </div>
+    <div class="ov-close" onclick="promptCloseFlow()" style="background:rgba(255,255,255,0.2); color:white; border-color:rgba(255,255,255,0.2);">✕</div>
+  </div>
+  <div class="urgent-body">
+    <div class="urgent-pulse" id="urgentIcon">🚨</div>
+    <div class="urgent-title" id="urgentTitle">立刻撥打 119</div>
+    <div class="urgent-sub"   id="urgentSub">這個情況危及生命，第一件事是呼叫救護車。</div>
+    <a href="tel:119" class="urgent-call-btn" id="urgentCallBtn">📞 撥打 119</a>
+    <div class="urgent-while" id="urgentWhile"></div>
+    <div class="urgent-not-now" onclick="goToSteps()">我已報案，查看詳細步驟 →</div>
+  </div>
+</div>
+
+<!-- Step -->
+<div class="flow-overlay" id="overlayStep">
+  <div class="ov-topbar">
+    <div class="ov-back-nav" id="stepBackBtn" onclick="stepBack()">
+      <div class="ov-back-icon">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress"><div class="ov-fill" id="stepProgress"></div></div>
+      <div class="ov-counter" id="stepLabel">剩餘 1 步</div>
+    </div>
+    <div class="ov-close" onclick="promptCloseFlow()">✕</div>
+  </div>
+  <div class="ov-scroll">
+    <div class="step-card" id="stepCard"></div>
+  </div>
+  <div class="ov-foot" id="stepFoot"></div>
+</div>
+
+<!-- Done -->
+<div class="flow-overlay" id="overlayDone">
+  <div class="ov-topbar">
+    <div class="ov-back-nav" onclick="backFromDone()">
+      <div class="ov-back-icon">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress"><div class="ov-fill green" style="width:100%"></div></div>
+      <div class="ov-counter">完成</div>
+    </div>
+    <div class="ov-close" onclick="closeAllOverlays()">✕</div>
+  </div>
+  <div class="ov-scroll" style="padding-top:20px">
+    <div class="done-check">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M6 15L11.5 20.5L22 9" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="done-title" id="doneTitle">處理完成了</div>
+    <div class="done-sub"   id="doneSub">你處理得很好。</div>
+    <div class="followup-section-label" id="followupLabel" style="display:none">後續待辦事項</div>
+    <div id="followupList"></div>
+  </div>
+  <div class="ov-foot">
+    <button class="restart-btn" onclick="closeAllOverlays()">↩ 回到主畫面</button>
+  </div>
+</div>
+
+<!-- Language Rescue -->
+<div class="flow-overlay" id="overlayLang">
+  <div class="ov-topbar">
+    <div class="ov-back-nav" onclick="closeAllOverlays()">
+      <div class="ov-back-icon">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress"><div class="ov-fill" style="width:100%;background:var(--blue)"></div></div>
+      <div class="ov-counter">語言求救</div>
+    </div>
+    <div class="ov-close" style="visibility:hidden">✕</div>
+  </div>
+  <div class="ov-scroll">
+    <p style="font-size:15px;color:var(--ink-3);margin-bottom:14px;font-weight:400">選擇情況 → 全螢幕顯示英文，讓對方看螢幕</p>
+    <button class="lang-card" onclick="showPhrase('ambulance')"><div class="lang-situation">救護車</div><div class="lang-zh">我需要救護車，這是緊急情況</div><div class="lang-en">I need an ambulance. This is an emergency!</div></button>
+    <button class="lang-card" onclick="showPhrase('police')"><div class="lang-situation">報警</div><div class="lang-zh">請幫我叫警察</div><div class="lang-en">Please call the police! I need help.</div></button>
+    <button class="lang-card" onclick="showPhrase('crash')"><div class="lang-situation">車禍</div><div class="lang-zh">我出了車禍，有人受傷</div><div class="lang-en">There has been a car accident. Someone is injured.</div></button>
+    <button class="lang-card" onclick="showPhrase('lost')"><div class="lang-situation">迷路</div><div class="lang-zh">我迷路了，請問這裡是哪裡？</div><div class="lang-en">I am lost. Can you tell me where I am?</div></button>
+    <button class="lang-card" onclick="showPhrase('robbery')"><div class="lang-situation">遭搶遭竊</div><div class="lang-zh">我剛被搶劫，請幫我報警</div><div class="lang-en">I have been robbed. Please call the police.</div></button>
+    <button class="lang-card" onclick="showPhrase('hospital')"><div class="lang-situation">送醫院</div><div class="lang-zh">請帶我去最近的醫院</div><div class="lang-en">Please take me to the nearest hospital.</div></button>
+    <button class="lang-card" onclick="showPhrase('insurance')"><div class="lang-situation">保險</div><div class="lang-zh">我有旅遊保險，請給我收據和診斷書</div><div class="lang-en">I have travel insurance. Please give me a receipt and medical report.</div></button>
+    <button class="lang-card" onclick="showPhrase('allergy')"><div class="lang-situation">過敏藥物</div><div class="lang-zh">我對某些藥物過敏，請治療前確認</div><div class="lang-en">I am allergic to certain medications. Please check before treating me.</div></button>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- Country Picker -->
+<div class="flow-overlay" id="overlayCountry">
+  <div class="ov-topbar">
+    <div class="ov-back-nav" onclick="backFromCountry()">
+      <div class="ov-back-icon">‹</div>
+      <div class="ov-back-text">返回</div>
+    </div>
+    <div class="ov-center">
+      <div class="ov-progress"><div class="ov-fill" style="width:100%;background:var(--blue)"></div></div>
+      <div class="ov-counter">選擇地區</div>
+    </div>
+    <div class="ov-close" style="visibility:hidden">✕</div>
+  </div>
+  <div class="ov-scroll" style="padding-top:8px">
+    <input type="search" id="countrySearch" placeholder="搜尋國家..." oninput="filterCountries(this.value)">
+    <div id="countryList"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- Phrase full-screen overlay -->
+<div class="phrase-overlay" id="phraseOverlay" onclick="hidePhrase()">
+  <div class="phrase-label">SHOW THIS TO THEM · 讓對方看螢幕</div>
+  <div class="phrase-zh" id="phraseZh"></div>
+  <div class="phrase-en" id="phraseEn"></div>
+  <div class="phrase-close">點任何地方關閉 · tap anywhere to close</div>
+</div>
+
+<!-- Confirm Dialog (region switch mid-flow) -->
+<div class="confirm-backdrop" id="confirmDialog" onclick="handleBackdropClick(event)">
+  <div class="confirm-sheet">
+    <div class="confirm-title">中斷目前流程？</div>
+    <div class="confirm-sub">切換地區會中斷你正在進行的步驟，確定要繼續嗎？</div>
+    <div class="confirm-btns">
+      <button class="confirm-ok"     onclick="confirmRegionSwitch()">確定切換</button>
+      <button class="confirm-cancel" onclick="cancelRegionSwitch()">繼續目前流程</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exit Confirm Dialog -->
+<div class="confirm-backdrop" id="exitConfirmDialog" onclick="handleExitBackdropClick(event)">
+  <div class="confirm-sheet">
+    <div class="confirm-title">要離開目前流程嗎？</div>
+    <div class="confirm-sub">你正在處理緊急情況，關閉後將回到主畫面。</div>
+    <div class="confirm-btns">
+      <button class="confirm-ok" style="background:var(--ink);" onclick="cancelExitFlow()">繼續處理</button>
+      <button class="confirm-cancel" style="border-color:var(--ink); color:var(--ink);" onclick="closeAllOverlaysAndExitDialog()">確定離開</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// REGION & COUNTRY DATA
+// ══════════════════════════════════════════════
+let currentRegion = 'tw'; // 'tw' | 'intl'
+let currentCountry = null;
+
+const COUNTRIES = [
+  { code:'JP', flag:'🇯🇵', name:'日本', amb:'119', pol:'110', fire:'119' },
+  { code:'US', flag:'🇺🇸', name:'美國', amb:'911', pol:'911', fire:'911' },
+  { code:'GB', flag:'🇬🇧', name:'英國', amb:'999', pol:'999', fire:'999' },
+  { code:'AU', flag:'🇦🇺', name:'澳洲', amb:'000', pol:'000', fire:'000' },
+  { code:'CA', flag:'🇨🇦', name:'加拿大', amb:'911', pol:'911', fire:'911' },
+  { code:'FR', flag:'🇫🇷', name:'法國', amb:'15', pol:'17', fire:'18' },
+  { code:'DE', flag:'🇩🇪', name:'德國', amb:'112', pol:'110', fire:'112' },
+  { code:'IT', flag:'🇮🇹', name:'義大利', amb:'118', pol:'113', fire:'115' },
+  { code:'ES', flag:'🇪🇸', name:'西班牙', amb:'112', pol:'091', fire:'080' },
+  { code:'PT', flag:'🇵🇹', name:'葡萄牙', amb:'112', pol:'112', fire:'112' },
+  { code:'NL', flag:'🇳🇱', name:'荷蘭', amb:'112', pol:'112', fire:'112' },
+  { code:'BE', flag:'🇧🇪', name:'比利時', amb:'112', pol:'101', fire:'100' },
+  { code:'CH', flag:'🇨🇭', name:'瑞士', amb:'144', pol:'117', fire:'118' },
+  { code:'AT', flag:'🇦🇹', name:'奧地利', amb:'144', pol:'133', fire:'122' },
+  { code:'SE', flag:'🇸🇪', name:'瑞典', amb:'112', pol:'112', fire:'112' },
+  { code:'NO', flag:'🇳🇴', name:'挪威', amb:'113', pol:'112', fire:'110' },
+  { code:'DK', flag:'🇩🇰', name:'丹麥', amb:'112', pol:'114', fire:'112' },
+  { code:'FI', flag:'🇫🇮', name:'芬蘭', amb:'112', pol:'112', fire:'112' },
+  { code:'NZ', flag:'🇳🇿', name:'紐西蘭', amb:'111', pol:'111', fire:'111' },
+  { code:'SG', flag:'🇸🇬', name:'新加坡', amb:'995', pol:'999', fire:'995' },
+  { code:'HK', flag:'🇭🇰', name:'香港', amb:'999', pol:'999', fire:'999' },
+  { code:'KR', flag:'🇰🇷', name:'韓國', amb:'119', pol:'112', fire:'119' },
+  { code:'TH', flag:'🇹🇭', name:'泰國', amb:'1669', pol:'191', fire:'199' },
+  { code:'VN', flag:'🇻🇳', name:'越南', amb:'115', pol:'113', fire:'114' },
+  { code:'MY', flag:'🇲🇾', name:'馬來西亞', amb:'999', pol:'999', fire:'994' },
+  { code:'ID', flag:'🇮🇩', name:'印尼', amb:'119', pol:'110', fire:'113' },
+  { code:'PH', flag:'🇵🇭', name:'菲律賓', amb:'911', pol:'911', fire:'911' },
+  { code:'IN', flag:'🇮🇳', name:'印度', amb:'108', pol:'100', fire:'101' },
+  { code:'CN', flag:'🇨🇳', name:'中國', amb:'120', pol:'110', fire:'119' },
+  { code:'MX', flag:'🇲🇽', name:'墨西哥', amb:'911', pol:'911', fire:'911' },
+  { code:'BR', flag:'🇧🇷', name:'巴西', amb:'192', pol:'190', fire:'193' },
+  { code:'ZA', flag:'🇿🇦', name:'南非', amb:'10177', pol:'10111', fire:'10111' },
+  { code:'AE', flag:'🇦🇪', name:'阿聯酋', amb:'998', pol:'999', fire:'997' },
+  { code:'EU', flag:'🌍', name:'歐盟通用 / 其他', amb:'112', pol:'112', fire:'112' },
+];
+
+// Embassy numbers for selected countries
+const EMBASSIES = {
+  JP: { name:'台北駐日經濟文化代表處（東京）', tel:'+81-3-3280-7811' },
+  US: { name:'駐美國台北經濟文化代表處（華府）', tel:'+1-202-895-1800' },
+  GB: { name:'駐英國台灣代表處（倫敦）', tel:'+44-20-7881-2650' },
+  AU: { name:'駐澳大利亞台北經濟文化辦事處', tel:'+61-2-6120-2000' },
+  FR: { name:'駐法國台灣代表處（巴黎）', tel:'+33-1-4453-5095' },
+  DE: { name:'駐德國台北代表處（柏林）', tel:'+49-30-2036-0960' },
+  SG: { name:'駐新加坡台北代表處', tel:'+65-6500-0100' },
+  KR: { name:'駐韓國台北代表部（首爾）', tel:'+82-2-399-2767' },
+  TH: { name:'駐泰國台北經濟文化辦事處', tel:'+66-2-670-0200' },
+  MY: { name:'駐馬來西亞台北經濟文化辦事處', tel:'+60-3-2161-2022' },
+};
+
+// ── LANGUAGE RESCUE PHRASES ──
+const PHRASES = {
+  ambulance: { zh:'我需要救護車，這是緊急情況', en:'I need an ambulance. This is an emergency!' },
+  police:    { zh:'請幫我叫警察', en:'Please call the police! I need help.' },
+  crash:     { zh:'我出了車禍，有人受傷', en:'There has been a car accident. Someone is injured.' },
+  lost:      { zh:'我迷路了，請問這裡是哪裡？', en:'I am lost. Can you tell me where I am?' },
+  robbery:   { zh:'我剛被搶劫，請幫我報警', en:'I have been robbed. Please call the police.' },
+  hospital:  { zh:'請帶我去最近的醫院', en:'Please take me to the nearest hospital.' },
+  insurance: { zh:'我有旅遊保險，請給我收據和診斷書', en:'I have travel insurance. Please give me a receipt and medical report.' },
+  allergy:   { zh:'我對以下藥物過敏，請勿使用', en:'I am allergic to certain medications. Please check before treating me.' },
+};
+
+// ── INTL FLOWS (international versions of key scenarios) ──
+const INTL_FLOWS = {
+  intl_crash: {
+    name: '車禍（國外）',
+    urgent: null,
+    assess: {
+      calm: '深呼吸。先確認所有人的狀況。',
+      question: '現在最緊急的問題是？',
+      options: [
+        { e:'🩸', main:'有人重傷、大量出血', sub:'可能危及生命', next:'urgent_crash', badge:'urgent' },
+        { e:'🚗', main:'有人受傷但意識清楚', sub:'輕中度傷', next:'steps', badge:'normal' },
+        { e:'😮', main:'都沒事，只有車輛受損', sub:'純財物損失', next:'steps_property', badge:'caution' },
+      ]
+    },
+    urgent_crash: {
+      icon:'🚨', title:'立刻撥打當地緊急電話',
+      sub:'撥打當地救護車號碼。\n若不知道，通用號碼是 112。',
+      while:[
+        { e:'📱', t:'撥打救護車，或請旁人幫忙' },
+        { e:'🗣', t:'用語言求救功能讓對方看螢幕' },
+        { e:'🤲', t:'有出血→加壓止血，等待救援' },
+      ]
+    },
+    steps: [
+      {
+        badge:'立刻做', badgeType:'ok',
+        calm:'你處理得很好。先確保安全。',
+        title:'把車移到安全位置，\n打開警示燈',
+        detail:'如果能移動車輛，停到路肩或停車格。打開雙黃燈（警示燈）。\n\n如果車無法移動——所有人離開車輛，移到護欄外側或人行道，遠離車流。',
+        btnText:'已確保安全',
+      },
+      {
+        badge:'步驟 2 · 報警', badgeType:'ok',
+        calm:'下一步是報警，這在國外非常重要。',
+        title:'撥打當地警察電話，\n等待警察到場',
+        detail:'在大多數國家，**車禍必須報警**——即使雙方同意私下和解，保險公司通常也要求警察報告。\n\n告訴警察：事故地點（可用 Google Maps 截圖）、雙方車牌號碼、有無傷亡。\n\n**等警察到場前，不要移動車輛。**',
+        tip:'不確定當地警察號碼？撥 112 在大多數國家都有效。',
+        btnText:'警察已到場或已報案',
+      },
+      {
+        badge:'步驟 3 · 記錄', badgeType:'ok',
+        calm:'現在拍照，保護自己的權益。',
+        title:'拍攝現場照片，\n交換對方資料',
+        detail:'**一定要拍的：**\n・雙方車牌（清晰可讀）\n・車輛損壞部位（多角度）\n・現場位置（含路名）\n・對方駕照和保險卡\n\n**交換資料：**\n・姓名、聯絡電話\n・駕照號碼\n・保險公司名稱 + 保單號碼\n・車牌號碼',
+        btnText:'已拍照並交換資料',
+      },
+      {
+        badge:'步驟 4 · 保險', badgeType:'info',
+        calm:'最後一步，保護理賠權益。',
+        title:'聯絡你的旅遊保險，\n取得警察報告編號',
+        detail:'**立刻要做的：**\n・向警察索取「事故報告編號」（Incident/Report Number）\n・聯絡旅遊保險公司，告知發生事故\n・如果是租車，聯絡租車公司的緊急聯絡電話\n\n**保留所有文件：**警察報告、醫療收據、維修報價單——這些是理賠必備文件。',
+        btnText:'已取得報告編號',
+      },
+    ],
+    steps_property: [
+      {
+        badge:'純財物損失', badgeType:'ok',
+        calm:'好在沒有人受傷。接下來保護你的權益。',
+        title:'即使只有財損，\n在多數國家仍需報警',
+        detail:'許多國家規定財損超過一定金額必須報警。即使不強制，**保險理賠通常需要警察報告**。\n\n撥打當地非緊急警察電話，說明是財物損失事故（no injuries）。',
+        btnText:'已了解，準備報案',
+      },
+      {
+        badge:'步驟 2 · 記錄', badgeType:'ok',
+        calm:'',
+        title:'拍照記錄，\n交換保險資料',
+        detail:'**必拍：**雙方車牌、損壞部位、現場位置\n\n**必要資料：**\n・對方姓名、電話\n・對方保險公司 + 保單號碼\n・警察到場後的事故報告編號',
+        btnText:'已完成記錄',
+      },
+    ],
+    done: {
+      title: '車禍初步處理完成',
+      sub: '保留所有文件，這是後續理賠的關鍵。',
+      followups: [
+        { name:'保留警察報告編號', detail:'保險理賠必備，索取書面報告副本' },
+        { name:'通知旅遊保險公司', detail:'多數保單要求 24–48 小時內通知' },
+        { name:'如有受傷，就醫並保留收據', detail:'所有醫療費用都可申請理賠' },
+        { name:'聯絡台灣外交部（如有需要）', detail:'0800-085-095 或當地駐外館處' },
+      ]
+    }
+  },
+
+  intl_robbery: {
+    name: '遭搶遭竊（國外）',
+    urgent: null,
+    steps: [
+      {
+        badge:'立刻做', badgeType:'ok',
+        calm:'你現在安全了嗎？先確認這個。',
+        title:'移到安全、\n有人的地方',
+        detail:'走進附近的商店、飯店大廳、警察局、地鐵站。如果歹徒還在附近，直接告訴工作人員發生了什麼。\n\n不要獨自走回住處。',
+        btnText:'我在安全的地方了',
+      },
+      {
+        badge:'步驟 2 · 掛失', badgeType:'ok',
+        calm:'接下來幾分鐘很重要，要快速行動。',
+        title:'立刻掛失信用卡\n和報失護照',
+        detail:'**護照遺失：**\n聯絡最近的台灣駐外館處，申請補發護照或入國許可。\n緊急電話：外交部 +886-800-085-095\n\n**信用卡遺失：**\n・Visa：+1-800-847-2911\n・Mastercard：+1-636-722-7111\n・可查背面電話或 App 凍結\n\n**手機遺失：**立刻遠端鎖定（Find My / Find My Device）',
+        btnText:'已掛失',
+      },
+      {
+        badge:'步驟 3 · 報警', badgeType:'ok',
+        calm:'報警才能保護你的保險理賠權益。',
+        title:'前往當地警察局報案，\n取得報案單',
+        detail:'前往最近的警察局（Police Station），說明遭搶/遭竊經過。\n\n**一定要取得：「Police Report」或「Incident Report」**\n這份文件是旅遊保險理賠的必備文件。\n\n不確定怎麼說？點選語言求救功能。',
+        tip:'如果語言不通，出示語言求救畫面，或請飯店協助聯絡翻譯。',
+        btnText:'已取得報案單',
+      },
+      {
+        badge:'步驟 4 · 聯絡保險', badgeType:'info',
+        calm:'',
+        title:'通知旅遊保險公司，\n準備理賠文件',
+        detail:'聯絡你的旅遊保險公司，告知遭竊事件。通常需要：\n・警察報告（Police Report）\n・失竊物品清單和估計價值\n・購買憑證（如有）\n\n**旅費補助：**如果護照遺失影響返台，部分保單涵蓋額外住宿和交通費用。',
+        btnText:'已聯絡保險',
+      },
+    ],
+    done: {
+      title: '初步處理完成',
+      sub: '接下來還需要處理幾件事。',
+      followups: [
+        { name:'補辦護照', detail:'聯絡駐外館處，準備身份證明文件' },
+        { name:'通知銀行辦理新卡', detail:'要求寄送備用信用卡到當地或回台後補辦' },
+        { name:'提交保險理賠', detail:'警察報告 + 失竊清單 + 保險公司表格' },
+        { name:'通知親友現況', detail:'讓家人知道你的狀況和下一步計畫' },
+      ]
+    }
+  },
+
+  intl_medical: {
+    name: '就醫（國外）',
+    urgent: null,
+    assess: {
+      calm: '先評估情況的嚴重程度。',
+      question: '情況有多緊急？',
+      options: [
+        { e:'🚨', main:'生命徵象異常、劇烈胸痛、呼吸困難', sub:'需要立刻就醫', next:'urgent_med', badge:'urgent' },
+        { e:'🏥', main:'需要就醫，但不是立刻危及生命', sub:'可以自行前往醫院', next:'steps', badge:'normal' },
+        { e:'💊', main:'輕症，需要買藥或看診', sub:'藥局或診所即可', next:'steps_mild', badge:'caution' },
+      ]
+    },
+    urgent_med: {
+      icon:'🏥', title:'立刻前往急診',
+      sub:'撥打當地救護車，或請人立刻送你去急診。\n告訴醫護人員你有旅遊保險。',
+      while:[
+        { e:'📱', t:'撥打救護車或請旁人幫忙叫車' },
+        { e:'💳', t:'備好護照和旅遊保險卡' },
+        { e:'🗣', t:'用語言求救功能顯示英文給對方看' },
+      ]
+    },
+    steps: [
+      {
+        badge:'出發前準備', badgeType:'ok',
+        calm:'前往醫院前，把這些東西準備好。',
+        title:'帶齊這些文件\n再去醫院',
+        detail:'**必帶：**\n・護照（或護照照片）\n・旅遊保險卡或保單號碼截圖\n・信用卡（部分醫院要求預付）\n・平時用藥清單（如有）\n\n**到急診時說：**\n"I have travel insurance." 讓醫院直接向保險公司請款（Direct Billing），你不需要先自費。',
+        btnText:'準備好了，出發',
+      },
+      {
+        badge:'步驟 2 · 就醫', badgeType:'ok',
+        calm:'到了醫院，用語言求救顯示英文。',
+        title:'掛急診，\n說明症狀和保險',
+        detail:'到急診櫃台說：**"I need to see a doctor. I have travel insurance."**\n\n告訴醫生：\n・症狀（什麼時候開始、哪裡不舒服）\n・過敏藥物\n・目前服用的藥物\n\n**語言不通？** 點語言求救功能，全螢幕顯示英文。',
+        btnText:'已完成就診',
+      },
+      {
+        badge:'步驟 3 · 文件', badgeType:'info',
+        calm:'離開醫院前，確保拿到所有文件。',
+        title:'索取這些文件\n才能回台申請理賠',
+        detail:'**離開醫院前一定要拿：**\n・就診收據（Receipt）\n・診斷書（Medical Report / Diagnosis）\n・處方箋（Prescription，如有）\n\n如果醫院已直接向保險公司請款，仍要保留副本以供確認。',
+        btnText:'已取得所有文件',
+      },
+    ],
+    steps_mild: [
+      {
+        badge:'輕症就醫', badgeType:'ok',
+        calm:'不需要急診，藥局或診所可以處理。',
+        title:'找附近藥局，\n或 Walk-in Clinic',
+        detail:'**搜尋方式：**\n・Google Maps 搜尋 "pharmacy" 或 "walk-in clinic"\n・詢問飯店前台，請他們推薦\n\n**藥局可直接買到的：**退燒藥（Ibuprofen/Paracetamol）、止痛藥、腸胃藥、抗過敏藥\n\n一般診所費用較低，且不需要預約。',
+        btnText:'已找到診所/藥局',
+      },
+      {
+        badge:'步驟 2 · 保留收據', badgeType:'info',
+        calm:'',
+        title:'保留所有收據，\n回台可申請理賠',
+        detail:'即使是小額醫療支出，也保留：\n・藥局收據\n・診所就診收據和診斷書\n\n回台後向旅遊保險申請，通常可報銷。\n部分信用卡附帶的旅遊保險也涵蓋這類支出。',
+        btnText:'已保留收據',
+      },
+    ],
+    done: {
+      title: '就醫完成',
+      sub: '注意保留所有醫療文件。',
+      followups: [
+        { name:'保留收據和診斷書', detail:'這是保險理賠的必備文件' },
+        { name:'回台後 30 天內申請理賠', detail:'聯絡旅遊保險公司，確認申請期限' },
+        { name:'如需追蹤治療，通知保險公司', detail:'部分保單涵蓋後續治療費用' },
+      ]
+    }
+  },
+};
+
+// ══════════════════════════════════════════════
+// REGION LOGIC
+// ══════════════════════════════════════════════
+let _pendingRegion = null;
+
+function setRegion(region) {
+  // If a flow overlay is open, show confirm dialog first
+  const anyOpen = document.querySelector('.flow-overlay.open');
+  if (anyOpen && region !== currentRegion) {
+    _pendingRegion = region;
+    document.getElementById('confirmDialog').classList.add('show');
+    return;
+  }
+  _applyRegion(region);
+}
+function confirmRegionSwitch() {
+  document.getElementById('confirmDialog').classList.remove('show');
+  closeAllOverlays();
+  _applyRegion(_pendingRegion);
+  _pendingRegion = null;
+}
+function cancelRegionSwitch() {
+  document.getElementById('confirmDialog').classList.remove('show');
+  _pendingRegion = null;
+}
+function handleBackdropClick(e) {
+  // Only close if clicking the backdrop itself, not the sheet
+  if (e.target === document.getElementById('confirmDialog')) {
+    cancelRegionSwitch();
+  }
+}
+
+function promptCloseFlow() {
+  document.getElementById('exitConfirmDialog').classList.add('show');
+}
+function cancelExitFlow() {
+  document.getElementById('exitConfirmDialog').classList.remove('show');
+}
+function closeAllOverlaysAndExitDialog() {
+  document.getElementById('exitConfirmDialog').classList.remove('show');
+  closeAllOverlays();
+}
+function handleExitBackdropClick(e) {
+  if (e.target === document.getElementById('exitConfirmDialog')) {
+    cancelExitFlow();
+  }
+}
+
+// Step back — step 1 goes home, subsequent steps go back one
+function stepBack() {
+  if (currentStepIdx === 0) {
+    promptCloseFlow();
+  } else {
+    prevStep();
+  }
+}
+// Urgent back: if flow had assess, return to it; otherwise go home
+function goUrgentBack() {
+  const flow = FLOWS[currentFlow];
+  if (flow && flow.assess) {
+    showAssess(flow);
+  } else {
+    promptCloseFlow();
+  }
+}
+// Done screen back — return to last step
+function backFromDone() {
+  openOverlay('overlayStep');
+}
+function _applyRegion(region) {
+  currentRegion = region;
+  const isTW = region === 'tw';
+  document.getElementById('btnTW').className   = 'region-btn' + (isTW ? ' active' : '');
+  document.getElementById('btnIntl').className = 'region-btn' + (!isTW ? ' active intl' : '');
+  document.getElementById('sectionTW').style.display   = isTW ? 'block' : 'none';
+  document.getElementById('sectionIntl').style.display = isTW ? 'none'  : 'block';
+  document.getElementById('heroSub').textContent = isTW
+    ? '告訴我發生了什麼，我會一步一步陪你處理。'
+    : '國際緊急模式：電話和步驟已為國外使用情境更新。';
+  if (!isTW && !currentCountry) detectCountry();
+}
+
+
+function detectCountry() {
+  const detect = document.getElementById('gpsDetect');
+  const label  = document.getElementById('gpsDetectLabel');
+  detect.style.display = 'flex';
+  label.textContent = '偵測位置中...';
+
+  if (!navigator.geolocation) {
+    label.textContent = '無法取得位置，請手動選擇地區';
+    setCountry('EU');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      // Simple lat/lng to country heuristic for common destinations
+      const c = geoToCountry(lat, lng);
+      setCountry(c);
+      label.textContent = `已偵測：${COUNTRIES.find(x=>x.code===c)?.name || c}`;
+    },
+    () => {
+      label.textContent = '位置偵測失敗，請手動選擇';
+      setCountry('EU');
+    },
+    { timeout: 8000 }
+  );
+}
+
+function geoToCountry(lat, lng) {
+  // Very rough bounding boxes for common tourist destinations
+  if (lat>20&&lat<46&&lng>122&&lng<146) return 'JP';
+  if (lat>24&&lat<50&&lng>-125&&lng<-66) return 'US';
+  if (lat>49&&lat<61&&lng>-8&&lng<2) return 'GB';
+  if (lat>-44&&lat<-10&&lng>113&&lng<154) return 'AU';
+  if (lat>42&&lat<60&&lng>-141&&lng<-52) return 'CA';
+  if (lat>42&&lat<51&&lng>-5&&lng<8) return 'FR';
+  if (lat>47&&lat<55&&lng>6&&lng<15) return 'DE';
+  if (lat>36&&lat<47&&lng>6&&lng<18) return 'IT';
+  if (lat>35&&lat<44&&lng>-9&&lng<3) return 'ES';
+  if (lat>1&&lat<2&&lng>103&&lng<105) return 'SG';
+  if (lat>22&&lat<23&&lng>113&&lng<115) return 'HK';
+  if (lat>33&&lat<39&&lng>125&&lng<130) return 'KR';
+  if (lat>5&&lat<21&&lng>97&&lng<106) return 'TH';
+  if (lat>8&&lat<24&&lng>102&&lng<110) return 'VN';
+  if (lat>1&&lat<7&&lng>100&&lng<120) return 'MY';
+  if (lat>-11&&lat<6&&lng>95&&lng<141) return 'ID';
+  if (lat>4&&lat<21&&lng>116&&lng<127) return 'PH';
+  if (lat>8&&lat<37&&lng>68&&lng<98) return 'IN';
+  if (lat>18&&lat<54&&lng>73&&lng<135) return 'CN';
+  if (lat>-55&&lat<5&&lng>-74&&lng<-35) return 'BR';
+  if (lat>55&&lat<70&&lng>11&&lng<25) return 'SE';
+  if (lat>56&&lat<71&&lng>4&&lng<32) return 'NO';
+  if (lat>54&&lat<58&&lng>8&&lng<16) return 'DK';
+  if (lat>59&&lat<70&&lng>19&&lng<32) return 'FI';
+  if (lat>45&&lat<48&&lng>6&&lng<11) return 'CH';
+  if (lat>46&&lat<49&&lng>9&&lng<17) return 'AT';
+  if (lat>49&&lat<52&&lng>2&&lng<7) return 'NL';
+  if (lat>45&&lat<48&&lng>2&&lng<7) return 'BE';
+  if (lat>-47&&lat<-34&&lng>166&&lng<178) return 'NZ';
+  if (lat>15&&lat<32&&lng>51&&lng<56) return 'AE';
+  if (lat>-35&&lat<-22&&lng>16&&lng<33) return 'ZA';
+  return 'EU'; // fallback
+}
+
+function setCountry(code) {
+  currentCountry = code;
+  const c = COUNTRIES.find(x => x.code === code) || COUNTRIES.find(x=>x.code==='EU');
+  document.getElementById('iecFlag').textContent = c.flag;
+  document.getElementById('iecCountryName').textContent = c.name;
+  document.getElementById('iecAmbNum').textContent = c.amb;
+  document.getElementById('iecPolNum').textContent = c.pol;
+  document.getElementById('iecFireNum').textContent = c.fire;
+  document.getElementById('iecAmbulance').href = 'tel:' + c.amb;
+  document.getElementById('iecPolice').href   = 'tel:' + c.pol;
+  document.getElementById('iecFire').href     = 'tel:' + c.fire;
+  // Embassy
+  const emb = EMBASSIES[code];
+  const embEl = document.getElementById('twEmbassy');
+  if (emb) {
+    embEl.textContent = emb.tel;
+    embEl.href = 'tel:' + emb.tel;
+    embEl.style.color = 'var(--ink)';
+  } else {
+    embEl.textContent = '外交部 0800-085-095';
+    embEl.href = 'tel:+886800085095';
+    embEl.style.color = 'var(--blue)';
+  }
+}
+
+function _oldShowCountryPicker() {
+  renderCountryList('');
+  showScreen('screenCountry');
+}
+
+function renderCountryList(filter) {
+  const f = filter.toLowerCase();
+  const list = document.getElementById('countryList');
+  const filtered = COUNTRIES.filter(c => !f || c.name.includes(f) || c.code.toLowerCase().includes(f));
+  list.innerHTML = filtered.map(c => `
+    <div onclick="pickCountry('${c.code}')" style="display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--border);cursor:pointer;">
+      <span style="font-size:22px">${c.flag}</span>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:400">${c.name}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--ink-3)">救護 ${c.amb} · 警察 ${c.pol} · 消防 ${c.fire}</div>
+      </div>
+      <span style="color:var(--ink-3);font-size:18px">›</span>
+    </div>`).join('');
+}
+
+function filterCountries(val) { renderCountryList(val); }
+
+function pickCountry(code) {
+  setCountry(code);
+  const label = document.getElementById('gpsDetectLabel');
+  if (label) label.textContent = `已選擇：${COUNTRIES.find(x=>x.code===code)?.name}`;
+  document.getElementById('gpsDetect').style.display = 'flex';
+  closeOverlay('overlayCountry');
+}
+
+// ── LANGUAGE RESCUE ──
+function showPhrase(key) {
+  const p = PHRASES[key];
+  if (!p) return;
+  document.getElementById('phraseZh').textContent = p.zh;
+  document.getElementById('phraseEn').innerHTML   = p.en;
+  document.getElementById('phraseOverlay').classList.add('show');
+}
+function hidePhrase() {
+  document.getElementById('phraseOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════
+// FLOW DATA
+// ══════════════════════════════════════════════
+const FLOWS = {
+
+  cpr: {
+    name: 'CPR 心肺復甦',
+    assess: {
+      calm: '保持冷靜。先確認他的狀況。',
+      question: '患者有沒有意識？',
+      options: [
+        { e:'😶', main:'沒有反應、叫不醒', sub:'可能失去意識', next:'urgent', badge:'urgent' },
+        { e:'😟', main:'有反應但很虛弱', sub:'可以說話或呻吟', next:'steps_conscious', badge:'normal' },
+      ]
+    },
+    urgent: {
+      icon: '❤️‍🔥', title: '立刻撥打 119',
+      sub: '患者失去意識，這是緊急情況。\n撥打 119 的同時就開始 CPR。',
+      while: [
+        { e:'🙋', t:'大聲呼叫旁人幫忙、去拿 AED' },
+        { e:'👂', t:'確認患者沒有呼吸' },
+        { e:'💪', t:'準備進行胸部按壓' },
+      ]
+    },
+    steps: [
+      {
+        badge: '危急 · 先做這個', badgeType: 'urgent',
+        calm: '保持冷靜，你可以做到。',
+        title: '確認意識\n沒有反應就開始',
+        detail: '輕拍雙肩，大聲問「你還好嗎？」。沒有反應、沒有呼吸，立刻開始。',
+        tip: null,
+        warn: null,
+        btnText: '已確認，開始 CPR',
+      },
+      {
+        badge: '步驟 2', badgeType: 'urgent',
+        calm: '你在幫他爭取時間。',
+        title: '胸部按壓\n30 下，用力、快速',
+        detail: '雙手交疊放胸骨中央，手臂打直，用體重下壓 5–6 公分。頻率像歌曲「Stayin\' Alive」的節奏（每分鐘 100–120 下）。每次按完讓胸部完全回彈。',
+        tip: '肋骨可能骨折——這是正常的，不要因此停下來。',
+        warn: null,
+        btnText: '完成 30 下，繼續',
+      },
+      {
+        badge: '步驟 3', badgeType: 'urgent',
+        calm: '再堅持，你做得很好。',
+        title: '人工呼吸 2 下\n（可以跳過）',
+        detail: '頭部後仰、下巴上抬，捏住鼻子，嘴對嘴吹氣 1 秒，見胸部隆起即可。重複 2 次後回到胸部按壓。\n\n如果不確定怎麼做，跳過人工呼吸，持續按壓就好。',
+        tip: null,
+        warn: null,
+        btnText: '繼續按壓循環',
+        skipText: '跳過，只做胸部按壓',
+      },
+      {
+        badge: '持續進行', badgeType: 'urgent',
+        calm: '你正在救一條命。',
+        title: '重複 30:2\n直到 AED 或救護到場',
+        detail: '持續循環：30 下胸部按壓 → 2 下人工呼吸。\n\nAED 到場後：開機，依照語音指示貼片、分析，建議電擊時確認所有人不接觸患者再按下電擊鈕。電擊後立刻繼續按壓。',
+        tip: null,
+        warn: null,
+        btnText: '救護人員已到場 ✓',
+      },
+    ],
+    done: {
+      title: '救護人員已接手',
+      sub: '你做得非常好。\n接下來讓專業人員處理。',
+      followups: [
+        { name: '告訴救護員你做了多久的 CPR', detail: '讓他們了解患者狀況' },
+        { name: '通知患者的家人或緊急聯絡人', detail: '確認有人知道這件事' },
+        { name: '如果你感到不適，也告訴救護員', detail: '施救者的壓力也很大' },
+      ]
+    }
+  },
+
+  crash: {
+    name: '車禍事故',
+    urgent: null,
+    assess: {
+      calm: '先深呼吸。慢慢告訴我狀況。',
+      question: '有人受傷嗎？',
+      options: [
+        { e:'🆘', main:'有人受傷或失去意識', sub:'需要立刻送醫', next:'urgent_crash', badge:'urgent' },
+        { e:'🚗', main:'只有財物損失', sub:'人都沒事', next:'steps', badge:'normal' },
+        { e:'🤔', main:'不確定，有人說頭很痛', sub:'可能延遲受傷', next:'steps_injury', badge:'caution' },
+      ]
+    },
+    steps: [
+      {
+        badge: '步驟 1 · 安全第一',
+        calm: '先確認你自己是安全的。',
+        title: '開啟危險警示燈，\n移到安全位置',
+        detail: '立刻開啟雙黃燈。如果車子能動，移到路肩。如果不能動，待在車內並繫好安全帶，等待救援。',
+        warn: '聞到汽油味？立刻離開車輛，遠離至少 30 公尺，不要點火。',
+        btnText: '已確保安全',
+      },
+      {
+        badge: '步驟 2 · 報案',
+        calm: '你有充足的時間做好這件事。',
+        title: '撥打 110，\n請警察來做記錄',
+        detail: '告訴警察：\n① 你在哪裡（路名 + 路口或地標）\n② 幾輛車、大概幾個人\n③ 有沒有人受傷\n\n警方到場前，不要移動車輛。',
+        tip: '就算對方說「私下解決就好」，也一定要報警做紀錄。這是保護你自己。',
+        btnText: '已撥打 110',
+      },
+      {
+        badge: '步驟 3 · 蒐證',
+        calm: '這些照片之後會很有用。',
+        title: '拍照，\n記錄現場',
+        detail: '打開手機相機，依序拍：\n\n① 雙方車牌（近拍清楚）\n② 車身損傷（四個角度）\n③ 路面刮痕和停車位置（遠拍）\n④ 周圍有沒有監視器（記下位置）',
+        tip: '行車記錄器畫面不要刪，回去才匯出。',
+        btnText: '照片已拍好',
+      },
+      {
+        badge: '步驟 4 · 互換資料',
+        calm: '保持冷靜，這只是交換資訊。',
+        title: '和對方\n交換基本資料',
+        detail: '你需要對方的：\n\n① 姓名和電話\n② 車牌號碼（你應該已經拍了）\n③ 保險公司名稱和保單號碼\n\n如果對方不願意配合，你已經有警察在處理了，不用強求。',
+        warn: '對方逃逸？不要追，記下車牌顏色廠牌和方向，告訴警察。',
+        btnText: '資料已交換',
+      },
+      {
+        badge: '步驟 5 · 等待',
+        calm: '最困難的部分已經過了。',
+        title: '等警察到場，\n不要輕易簽任何文件',
+        detail: '等警方來做現場記錄（製作交通事故現場圖）。\n\n警察來之前：不要移動車輛、不要隨意簽名、不要承認任何責任。\n\n完成後你會拿到一張「道路交通事故當事人登記聯單」，留著，理賠用得到。',
+        btnText: '警察已到場並完成記錄',
+      },
+    ],
+    urgent_crash: {
+      icon: '🚑', title: '立刻撥打 119',
+      sub: '有人受傷，救護車比什麼都重要。\n打完電話再做其他事。',
+      while: [
+        { e:'🚗', t:'開啟危險警示燈' },
+        { e:'🙅', t:'不要移動傷者（除非有立即危險）' },
+        { e:'🗣', t:'大聲呼叫，讓附近的人知道' },
+      ]
+    },
+    done: {
+      title: '車禍現場處理完成',
+      sub: '你冷靜地處理了這件事。\n還有一些後續要跟進。',
+      followups: [
+        { name: '24 小時內通知保險公司', detail: '說明事故狀況，詢問理賠流程' },
+        { name: '保存道路交通事故登記聯單', detail: '理賠和後續申訴都需要' },
+        { name: '確認身體有沒有延遲痛感', detail: '事故後 24-48 小時內出現的疼痛也算' },
+        { name: '向監理所查詢對方有無投保強制險', detail: '有受傷時可申請強制險理賠' },
+      ]
+    }
+  },
+
+  burn: {
+    name: '燙傷灼傷',
+    urgent: null,
+    assess: {
+      calm: '先把燙到的地方移開熱源。',
+      question: '燙傷的狀況大概是？',
+      options: [
+        { e:'⬛', main:'皮膚焦黑、白色或沒有痛感', sub:'可能是三度燙傷', next:'urgent_burn', badge:'urgent' },
+        { e:'💧', main:'有水泡，紅腫', sub:'二度燙傷', next:'steps', badge:'normal' },
+        { e:'🔴', main:'皮膚紅、有點痛，沒有水泡', sub:'一度燙傷', next:'steps_mild', badge:'normal' },
+      ]
+    },
+    steps: [
+      {
+        badge: '立刻做 · 最重要',
+        calm: '這件事要現在馬上做，很重要。',
+        title: '用流動冷水\n沖 15–20 分鐘',
+        detail: '打開水龍頭，讓冷水直接沖在燙傷的地方。不用冰水，普通冷水就好。\n\n就算很痛，也要沖滿 15 分鐘——這是減輕傷害最有效的方式。',
+        warn: '不要塗醬油、牙膏、奶油、蘆薈。不要刺破水泡。這些都會讓情況更嚴重。',
+        btnText: '已沖 15 分鐘以上',
+      },
+      {
+        badge: '步驟 2',
+        calm: '沖完了，做得好。',
+        title: '輕輕脫除\n衣物和飾品',
+        detail: '輕柔地移除燙傷部位的衣服、戒指、手錶、手環。\n\n如果衣物已經黏在皮膚上，不要強行撕除——保持繼續沖水，讓醫護人員處理。',
+        tip: '腫脹很快會出現，先移除飾品可以避免之後卡住。',
+        btnText: '已移除衣物和飾品',
+      },
+      {
+        badge: '步驟 3',
+        calm: '你處理得很好。',
+        title: '覆蓋保護\n等待就醫',
+        detail: '用乾淨的濕紗布或保鮮膜輕輕覆蓋傷口，不要包緊。\n\n**需要立刻送急診的情況：**\n・水泡破裂\n・燙到臉、手、關節、生殖器\n・面積大於手掌大小\n・孩童或老人\n・疼痛感消失（可能更嚴重）',
+        btnText: '前往就醫',
+      },
+    ],
+    urgent_burn: {
+      icon: '🔥', title: '前往急診',
+      sub: '三度燙傷需要立即就醫。\n先繼續沖冷水，同時準備出發。',
+      while: [
+        { e:'💧', t:'繼續沖冷水，邊沖邊出發' },
+        { e:'🙅', t:'不要自行塗抹任何東西' },
+        { e:'🏥', t:'告訴急診「三度燙傷」' },
+      ]
+    },
+    done: {
+      title: '初步處理完成',
+      sub: '燙傷的後續照護很重要，\n請記得追蹤這些事項。',
+      followups: [
+        { name: '回診或追蹤傷口', detail: '每天觀察有無感染跡象（紅腫熱痛化膿）' },
+        { name: '保持傷口清潔乾燥', detail: '按照醫師指示換藥' },
+        { name: '防曬很重要', detail: '復原中的皮膚對陽光非常敏感' },
+      ]
+    }
+  },
+
+  choke: {
+    name: '異物哽噎',
+    assess: {
+      calm: '先看著他，不要移動他。',
+      question: '他現在還有意識嗎？',
+      options: [
+        { e:'😶', main:'失去意識、無反應', sub:'昏倒了', next:'urgent', badge:'urgent' },
+        { e:'😣', main:'有意識，但無法說話', sub:'雙手掐喉、臉脹紅', next:'steps', badge:'normal' },
+        { e:'😮‍💨', main:'可以咳嗽', sub:'還能發出聲音', next:'steps_cough', badge:'caution' },
+      ]
+    },
+    urgent: {
+      icon: '😮‍💨', title: '立刻撥打 119',
+      sub: '哽噎導致失去意識，立刻呼叫救援。\n開始 CPR，如果看到異物才嘗試取出。',
+      while: [
+        { e:'💨', t:'開始 CPR——每次按壓後張嘴確認有無異物' },
+        { e:'🙅', t:'看不到異物不要盲目伸手' },
+        { e:'🆘', t:'大聲呼叫旁人幫忙' },
+      ]
+    },
+    steps: [
+      {
+        badge: '立刻判斷',
+        calm: '快速確認，但不要慌。',
+        title: '確認是否真的\n哽噎了',
+        detail: '詢問或觀察：\n\n✅ 哽噎的特徵：\n・無法說話或哭泣\n・雙手掐住喉嚨（哽噎的本能反應）\n・臉色開始發紫\n・無聲地張嘴想吸氣\n\n如果還能用力咳嗽，鼓勵他繼續咳——這是最好的方式。',
+        btnText: '無法咳嗽，需要協助',
+      },
+      {
+        badge: '立刻執行 · 哈姆立克法',
+        calm: '你可以做到這個，跟著步驟。',
+        title: '哈姆立克法\n（成人）',
+        detail: '① 站在患者身後，一腳置於其兩腳之間\n② 一手握拳，拇指側抵在肚臍上方兩根手指處\n③ 另一手包覆握拳那隻手\n④ 快速用力向內、向上推壓\n⑤ 每次 5 下一組，重複直到異物排出',
+        warn: '孕婦或肥胖者：改為胸部推壓——雙手從背後環抱，在胸骨中央位置向內推壓。',
+        btnText: '異物已排出',
+        altText: '患者失去意識了',
+        altNext: 'unconscious',
+      },
+    ],
+    done: {
+      title: '異物排出了',
+      sub: '做得好，你幫助了他。\n後續還需要注意幾件事。',
+      followups: [
+        { name: '建議就醫確認', detail: '哽噎可能造成內傷或氣管損傷' },
+        { name: '接下來幾小時觀察呼吸狀況', detail: '如有持續咳嗽或呼吸困難請就醫' },
+      ]
+    }
+  },
+
+  robbery: {
+    name: '被搶遭竊',
+    urgent: null,
+    steps: [
+      {
+        badge: '首先',
+        calm: '你現在安全了嗎？先確認這個。',
+        title: '移到安全、\n有人的地方',
+        detail: '走進便利商店、捷運站、任何有人的公共場所。如果感覺對方還在附近，直接告訴店員發生了什麼事。\n\n不要獨自走回家。',
+        btnText: '我在安全的地方了',
+      },
+      {
+        badge: '步驟 2 · 報警',
+        calm: '做這件事才能保護你的權益。',
+        title: '撥打 110 報案，\n取得報案三聯單',
+        detail: '告訴警察：\n① 事發地點和大概時間\n② 歹徒人數和特徵（身高、服裝、口音）\n③ 失竊物品清單\n④ 逃跑方向和交通工具\n\n報案結束後，向警察索取「報案三聯單」——補辦證件和保險理賠都需要。',
+        tip: '就算東西找不回來，報案紀錄也很重要。',
+        btnText: '已報案，取得三聯單',
+      },
+      {
+        badge: '步驟 3 · 緊急掛失',
+        calm: '按照順序，一個一個來。',
+        title: '掛失重要物品',
+        detail: '根據你失去的東西：\n\n**手機被搶** → 立刻開啟遠端鎖定\niPhone：iCloud.com → 尋找 → 標記遺失\nAndroid：myaccount.google.com → 尋找我的裝置\n\n**信用卡/金融卡** → 打背面客服電話掛失\n\n**身分證** → 向任一戶政事務所掛失\n\n**門號** → 去電信門市或打客服掛失',
+        btnText: '重要物品已掛失',
+      },
+    ],
+    done: {
+      title: '緊急處理完成',
+      sub: '最困難的部分已經結束。\n還有一些後續要跟進。',
+      followups: [
+        { name: '補辦身分證', detail: '攜帶報案三聯單到戶政事務所' },
+        { name: '補辦健保卡', detail: '攜帶身分證到健保署或藥局辦理' },
+        { name: '如有保險，向保險公司申請理賠', detail: '需要報案三聯單' },
+        { name: '告知家人或朋友', detail: '讓身邊的人知道你的狀況' },
+      ]
+    }
+  },
+
+  drowning: {
+    name: '溺水急救',
+    assess: {
+      calm: '先讓他上岸或靠岸，再評估狀況。',
+      question: '患者現在有沒有意識？',
+      options: [
+        { e:'😶', main:'沒有反應、叫不醒', sub:'可能失去意識', next:'urgent', badge:'urgent' },
+        { e:'😟', main:'有意識，可以說話', sub:'上岸了或正在水邊', next:'steps', badge:'normal' },
+        { e:'🌊', main:'還在水裡，無法判斷', sub:'尚未上岸', next:'steps_inwater', badge:'caution' },
+      ]
+    },
+    urgent: {
+      icon: '🌊', title: '立刻撥打 119',
+      sub: '溺水後無意識，需要立刻急救和救護。\n同時開始 CPR。',
+      while: [
+        { e:'🆘', t:'大聲呼叫旁人一起幫忙' },
+        { e:'💨', t:'溺水 CPR：先做 5 次人工呼吸，再胸部按壓' },
+        { e:'💧', t:'不需要先「倒水」——已被證實無效' },
+      ]
+    },
+    steps: [
+      {
+        badge: '在岸上先做',
+        calm: '你在岸上可以做很多事。',
+        title: '不要跳下去，\n先從岸上施救',
+        detail: '丟出任何可以漂浮的東西：救生圈、寶特瓶、保麗龍、甚至繫緊的衣物。讓溺水者抓住，再把他拉回來。\n\n必須下水時：從背後靠近，用手肘夾住溺水者頭部，仰泳帶回。',
+        warn: '恐慌中的溺水者力量非常大，可能把你一起拉下去。',
+        btnText: '患者已上岸',
+      },
+      {
+        badge: '上岸後',
+        calm: '上岸了，現在檢查狀況。',
+        title: '確認意識和呼吸',
+        detail: '輕拍雙肩呼叫，確認有沒有反應。\n\n觀察胸部是否起伏、有無呼吸聲（不超過 10 秒）。\n\n**有意識**→ 換掉濕衣物、保暖、陪伴等救護。\n**無意識、無呼吸** → 立刻開始 CPR。',
+        tip: '不需要「倒水」——這個方式已被證實無效，會浪費寶貴時間。',
+        btnText: '患者有意識，保持觀察',
+        altText: '無意識，開始 CPR',
+        altNext: 'cpr_redirect',
+      },
+    ],
+    done: {
+      title: '患者已安全',
+      sub: '溺水後還需要醫療觀察，\n請記得這些後續事項。',
+      followups: [
+        { name: '一定要送醫，即使看起來沒事', detail: '「乾性溺水」可能在 72 小時後出現症狀' },
+        { name: '觀察呼吸、咳嗽、意識狀況', detail: '任何異常立刻回急診' },
+      ]
+    }
+  },
+
+  // ── 擦傷・撞傷 ──────────────────────────────
+  abrasion: {
+    name: '擦傷・撞傷',
+    urgent: null,
+    assess: {
+      calm: '先深呼吸。評估一下傷口狀況。',
+      question: '傷口看起來怎麼樣？',
+      options: [
+        { e:'🩸', main:'大量出血、血流不止', sub:'按壓後仍無法控制', next:'urgent_bleed', badge:'urgent' },
+        { e:'🛵', main:'擦傷、皮膚破皮', sub:'面積可能大，但血量不多', next:'steps', badge:'normal' },
+        { e:'🟤', main:'撞傷、瘀青腫脹', sub:'皮膚完整，但很痛、開始腫', next:'steps_bruise', badge:'caution' },
+      ]
+    },
+    urgent_bleed: {
+      icon: '🩸', title: '持續加壓止血',
+      sub: '用乾淨的布用力壓住傷口，不要鬆開，\n同時前往急診。',
+      while: [
+        { e:'🤲', t:'持續施壓，不要查看傷口——鬆開會讓血塊破壞' },
+        { e:'⬆️', t:'把受傷部位抬高，高於心臟' },
+        { e:'🏥', t:'壓住同時前往急診，或請人送醫' },
+      ]
+    },
+    steps: [
+      {
+        badge: '立刻做 · 清潔傷口', badgeType: 'ok',
+        calm: '擦傷最重要的事是清潔。',
+        title: '用清水沖洗傷口，\n至少 3–5 分鐘',
+        detail: '打開水龍頭，讓流動清水直接沖洗傷口，把砂礫、泥土和髒汙沖乾淨。\n\n**機車擦傷特別注意**：柏油和砂粒留在傷口裡容易感染，要徹底沖，感覺很痛是正常的。',
+        tip: '不要用碘酒或酒精直接擦傷口——會破壞細胞，反而延緩癒合。',
+        btnText: '已沖洗乾淨',
+      },
+      {
+        badge: '步驟 2 · 止血', badgeType: 'ok',
+        calm: '沖完了，現在處理出血。',
+        title: '用乾淨紗布\n輕壓止血',
+        detail: '用乾淨的紗布或衛生棉輕輕覆蓋傷口，加壓 3–5 分鐘。\n\n血浸透了，**不要移除**，直接疊加一層繼續壓。移除會破壞正在形成的血塊。',
+        tip: '擦傷面積大但血量少是正常的——擦傷傷的是表皮，不是大血管。',
+        btnText: '出血已控制',
+      },
+      {
+        badge: '步驟 3 · 包紮', badgeType: 'ok',
+        calm: '快好了。',
+        title: '覆蓋傷口，\n保持濕潤',
+        detail: '用稍微打濕的紗布覆蓋傷口，再用膠帶固定。\n\n**濕潤的環境讓傷口癒合更快，疤也比較小。**\n\n沒有紗布？保鮮膜也可以暫時覆蓋，記得固定邊緣。',
+        btnText: '已包紮完成',
+      },
+      {
+        badge: '觀察 · 之後幾天', badgeType: 'info',
+        calm: '做得很好。最後告訴你要注意什麼。',
+        title: '這些情況\n需要就醫',
+        detail: '**正常現象**：傷口周圍輕微紅腫、透明或淡黃色滲液。\n\n**需要就醫**：\n・紅腫範圍擴大、有熱感\n・出現黃綠色膿液\n・發燒超過 38°C\n・傷口超過 3 公分且邊緣無法閉合\n・5–7 天沒有明顯癒合',
+        btnText: '我知道了',
+      },
+    ],
+    steps_bruise: [
+      {
+        badge: '撞傷 · 立刻做', badgeType: 'ok',
+        calm: '撞傷最重要的是降溫和消腫。',
+        title: '立刻冰敷，\n前 48 小時內',
+        detail: '冰袋用薄布包住，放在腫脹處。**每次 15–20 分鐘，間隔 1–2 小時。**\n\n不要讓冰袋直接接觸皮膚——會造成凍傷。',
+        tip: '沒有冰袋？便利商店冷凍食品包裝、飲料鋁罐都可以暫時用。',
+        btnText: '已開始冰敷',
+      },
+      {
+        badge: '步驟 2 · 抬高', badgeType: 'ok',
+        calm: '繼續。',
+        title: '把受傷部位\n抬高，高於心臟',
+        detail: '坐下或躺下，把手臂或腿用枕頭墊高。\n\n抬高可以讓血液不過度聚集在受傷部位，有效減輕腫脹。',
+        btnText: '已抬高',
+      },
+      {
+        badge: '觀察', badgeType: 'info',
+        calm: '這些情況需要特別注意。',
+        title: '出現這些症狀，\n需要去照X光',
+        detail: '**可能是骨折：**\n・疼痛非常劇烈，無法承重\n・腫脹範圍很大且快速擴散\n・外觀看起來變形\n・撞到頭部後頭暈、嘔吐\n\n一般瘀青 2–3 天顏色最深，7–14 天內消退是正常的。',
+        btnText: '我知道了',
+      },
+    ],
+    done: {
+      title: '初步處理完成',
+      sub: '做得很好。傷口需要幾天照護。',
+      followups: [
+        { name: '每天換藥一次（或弄濕時換）', detail: '換藥前用生理食鹽水清潔' },
+        { name: '避免讓傷口沾水泡水', detail: '淋浴時可以用防水貼片保護' },
+        { name: '觀察感染跡象（紅腫熱痛擴大）', detail: '有異常立刻就醫' },
+      ]
+    }
+  },
+
+  // ── 扭傷・挫傷 ──────────────────────────────
+  sprain: {
+    name: '扭傷・挫傷',
+    urgent: null,
+    assess: {
+      calm: '先坐下，不要讓受傷部位繼續承重。',
+      question: '受傷的情況是？',
+      options: [
+        { e:'💥', main:'劇烈疼痛、外型明顯變形', sub:'可能是骨折', next:'urgent_fracture', badge:'urgent' },
+        { e:'🦶', main:'扭到，腫脹疼痛但外型正常', sub:'典型扭傷', next:'steps', badge:'normal' },
+      ]
+    },
+    urgent_fracture: {
+      icon: '🦴', title: '可能是骨折',
+      sub: '不要移動受傷部位。\n需要X光確認——請前往急診。',
+      while: [
+        { e:'🚫', t:'不要嘗試「喬回去」或按摩——可能讓骨折更嚴重' },
+        { e:'📏', t:'用木板或硬物固定關節兩端，再包紮' },
+        { e:'🧊', t:'可以冰敷減輕腫脹，但不要施壓' },
+        { e:'🏥', t:'前往急診照X光確認' },
+      ]
+    },
+    steps: [
+      {
+        badge: 'P · 保護', badgeType: 'ok',
+        calm: '扭傷的標準處理叫做 PRICE，跟著做。',
+        title: '停止使用\n受傷部位',
+        detail: '馬上停下來，不要讓受傷的腳踝或手腕繼續承重或活動。\n\n能走的話——慢慢移到可以坐下的地方，**不要硬撐走路**，這會讓韌帶傷得更嚴重。',
+        btnText: '已停止使用',
+      },
+      {
+        badge: 'R + I · 冰敷', badgeType: 'ok',
+        calm: '接下來 48 小時，冰敷是最重要的事。',
+        title: '冰敷 20 分鐘，\n降低腫脹',
+        detail: '冰袋用薄布包住，放在腫脹部位。**每次 15–20 分鐘，間隔 1 小時**，前 48 小時持續進行。\n\n48 小時後改**熱敷**，促進血液循環、加速恢復。',
+        warn: '不要讓冰袋直接接觸皮膚——會造成凍傷。',
+        btnText: '冰敷中，了解了',
+      },
+      {
+        badge: 'C · 加壓包紮', badgeType: 'ok',
+        calm: '有彈性繃帶的話現在用上。',
+        title: '用彈性繃帶\n稍微加壓包紮',
+        detail: '從**腳趾往上包**（手腕則從手掌往上），稍微加壓但不要太緊——腳趾應該還能自由動。\n\n**包太緊的跡象**：末端麻木、顏色變藍紫。出現就馬上放鬆。\n\n沒有繃帶？跳過也可以。',
+        skipText: '沒有繃帶，跳過',
+        btnText: '已包紮',
+      },
+      {
+        badge: 'E + 觀察', badgeType: 'info',
+        calm: '最後一步。',
+        title: '抬高，\n觀察恢復情況',
+        detail: '坐下或躺下，把受傷的腳踝或手腕用枕頭墊高，高於心臟。\n\n**恢復預期：**\n・輕度：3–5 天明顯好轉\n・中度：2–4 週才能正常活動\n\n**需要就醫：**\n直接承重時劇烈疼痛、2 天後腫脹持續惡化、外型不對稱',
+        btnText: '我知道了',
+      },
+    ],
+    done: {
+      title: '扭傷處理完成',
+      sub: '接下來 48 小時是關鍵恢復期。',
+      followups: [
+        { name: '48 小時內持續冰敷（每小時一次）', detail: '之後改熱敷，促進血循' },
+        { name: '避免讓受傷部位承重', detail: '能休息就休息' },
+        { name: '2 天後腫脹未改善，去照X光', detail: '確認沒有骨裂或韌帶斷裂' },
+      ]
+    }
+  },
+
+  // ── 割傷・刺傷 ──────────────────────────────
+  cut: {
+    name: '割傷・刺傷',
+    urgent: null,
+    assess: {
+      calm: '先用布或手壓住傷口，評估一下。',
+      question: '傷口的狀況？',
+      options: [
+        { e:'🩸', main:'大量出血、壓住後仍流', sub:'無法控制', next:'urgent_cut', badge:'urgent' },
+        { e:'✂️', main:'割傷，出血但可以控制', sub:'一般割傷', next:'steps', badge:'normal' },
+        { e:'📍', main:'刺傷，傷口小但深', sub:'釘子、針、玻璃', next:'steps_puncture', badge:'caution' },
+      ]
+    },
+    urgent_cut: {
+      icon: '🩸', title: '用力持續加壓',
+      sub: '不要移開，不要查看傷口。\n壓著同時前往急診。',
+      while: [
+        { e:'🤲', t:'用最厚的乾淨布料用力壓住——壓到有點痛的程度' },
+        { e:'⬆️', t:'把受傷部位抬高到心臟以上' },
+        { e:'🚫', t:'血浸透了不要移開布，直接疊加新的繼續壓' },
+        { e:'🏥', t:'請人送你去急診' },
+      ]
+    },
+    steps: [
+      {
+        badge: '立刻做 · 止血', badgeType: 'ok',
+        calm: '先止血，然後來清潔。',
+        title: '用乾淨布料\n直接加壓 3–5 分鐘',
+        detail: '用衛生棉墊、紗布或乾淨布料直接壓住傷口，維持穩定壓力 3–5 分鐘。\n\n**計時，不要中途查看。**每次移開都讓血塊從頭來。',
+        btnText: '出血已止住',
+      },
+      {
+        badge: '步驟 2 · 清潔', badgeType: 'ok',
+        calm: '血止住了，現在清潔。',
+        title: '清水沖洗傷口\n把汙染物沖掉',
+        detail: '用流動清水或生理食鹽水直接沖洗傷口內部 2–3 分鐘。\n\n**不要用酒精或碘酒塗傷口裡面**——只能塗傷口周圍皮膚，不要進到傷口。',
+        btnText: '已清潔傷口',
+      },
+      {
+        badge: '步驟 3 · 包紮 or 就醫', badgeType: 'info',
+        calm: '現在判斷是否需要縫合。',
+        title: '這個傷口\n需要縫合嗎？',
+        detail: '**需要去急診縫合：**\n・傷口長度超過 1 公分\n・邊緣無法自然靠攏\n・能看到黃色脂肪或白色組織\n・臉部的割傷\n\n**可以自行處理：**\n用蝴蝶貼把邊緣拉攏，貼上紗布包紮。',
+        tip: '黃金縫合時間是傷後 6–8 小時內，之後感染風險增加。',
+        btnText: '不需縫合，已包紮',
+        altText: '傷口較深，前往就醫',
+        altNext: 'goto_done',
+      },
+    ],
+    steps_puncture: [
+      {
+        badge: '刺傷 · 注意', badgeType: 'warn',
+        calm: '刺傷傷口雖小，但要特別注意感染。',
+        title: '確認異物是否\n還在傷口裡',
+        detail: '如果異物（釘子、玻璃）仍在傷口裡：\n\n**不要自行拔除**——讓醫護人員處理。\n\n異物已不在傷口 → 繼續下一步清潔。',
+        warn: '踩到生鏽的鐵釘？一定要就醫確認破傷風疫苗是否需要補打。',
+        btnText: '異物已不在傷口',
+        altText: '異物還在，需要就醫',
+        altNext: 'goto_done',
+      },
+      {
+        badge: '步驟 2 · 清潔', badgeType: 'ok',
+        calm: '讓傷口稍微自然流血，幫助沖出細菌。',
+        title: '自然流血 1–2 分鐘，\n再用水沖洗',
+        detail: '刺傷傷口小而深，讓它稍微自然流血，有助把細菌帶出來。\n\n之後用生理食鹽水或清水對著傷口沖洗至少 3 分鐘，輕輕擠壓傷口周圍幫助清潔深處。',
+        btnText: '已清潔',
+      },
+      {
+        badge: '步驟 3 · 觀察', badgeType: 'info',
+        calm: '刺傷最大的風險是感染，特別是破傷風。',
+        title: '這些情況\n需要就醫',
+        detail: '**請去診所或急診：**\n・生鏽金屬或泥土中的釘子造成的刺傷\n・刺傷在手、腳、關節附近\n・超過 5 年沒打破傷風疫苗\n\n**接下來觀察 3–5 天：**\n傷口周圍紅腫擴大、出現膿液有異味、發燒',
+        btnText: '我知道了',
+      },
+    ],
+    done: {
+      title: '傷口初步處理完成',
+      sub: '割傷和刺傷的後續照護很重要。',
+      followups: [
+        { name: '每天換藥，保持傷口清潔', detail: '用生理食鹽水清潔後再包紮' },
+        { name: '觀察感染跡象 3–5 天', detail: '紅腫擴大、有膿、發燒 → 立刻就醫' },
+        { name: '確認破傷風疫苗是否在有效期', detail: '成人建議每 10 年補打一次' },
+      ]
+    }
+  },
+};
+
+// Merge international flows into FLOWS
+Object.assign(FLOWS, INTL_FLOWS);
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let currentFlow = null;
+let currentStepIdx = 0;
+let stepList = [];
+
+// ══════════════════════════════════════════════
+// OVERLAY CONTROL
+// ══════════════════════════════════════════════
+function openOverlay(id) {
+  document.querySelectorAll('.flow-overlay').forEach(o => o.classList.remove('open'));
+  document.getElementById(id).classList.add('open');
+}
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function closeAllOverlays() {
+  currentFlow = null; currentStepIdx = 0; stepList = [];
+  stopVoice();
+  document.querySelectorAll('.flow-overlay').forEach(o => o.classList.remove('open'));
+}
+// Legacy alias used throughout the code
+function showScreen(id) {
+  const map = {
+    screenHome:    null,
+    screenUrgent:  'overlayUrgent',
+    screenStep:    'overlayStep',
+    screenDone:    'overlayDone',
+    screenLang:    'overlayLang',
+    screenCountry: 'overlayCountry',
+  };
+  if (map[id] === null) { closeAllOverlays(); return; }
+  if (map[id]) openOverlay(map[id]);
+}
+function goHome() {
+  currentFlow = null; currentStepIdx = 0; stepList = [];
+  stopVoice();
+  closeAllOverlays();
+}
+function openLangScreen()    { openOverlay('overlayLang'); }
+function openCountryPicker() { renderCountryList(''); openOverlay('overlayCountry'); }
+// Country picker back: returns to intl main (just closes picker, main page is underneath)
+function backFromCountry()   { closeOverlay('overlayCountry'); }
+
+
+// ══════════════════════════════════════════════
+// FLOW LOGIC
+// ══════════════════════════════════════════════
+function startFlow(flowId) {
+  const flow = FLOWS[flowId];
+  if (!flow) return;
+  currentFlow = flowId;
+
+  if (flow.urgent && !flow.assess) {
+    showUrgent(flow.urgent, flowId);
+  } else if (flow.assess) {
+    showAssess(flow);
+  } else {
+    startSteps(flow.steps, flow.done);
+  }
+}
+
+function showUrgent(urgentData, flowId) {
+  document.getElementById('urgentIcon').textContent = urgentData.icon;
+  document.getElementById('urgentTitle').textContent = urgentData.title;
+  document.getElementById('urgentSub').textContent = urgentData.sub;
+
+  // Dynamic call button
+  const callBtn = document.getElementById('urgentCallBtn');
+  const isIntl = currentRegion === 'intl';
+  const c = isIntl && currentCountry ? COUNTRIES.find(x => x.code === currentCountry) : null;
+  const ambNum = c ? c.amb : '119';
+  const label  = isIntl ? `📞 撥打 ${ambNum}（救護）` : `📞 撥打 119`;
+  callBtn.href = 'tel:' + ambNum;
+  callBtn.textContent = label;
+
+  const whileEl = document.getElementById('urgentWhile');
+  if (urgentData.while) {
+    whileEl.innerHTML = `<div class="urgent-while-title">WHILE YOU WAIT · 等待救援時</div>` +
+      urgentData.while.map(w => `<div class="urgent-while-item"><span>${w.e}</span><span>${w.t}</span></div>`).join('');
+    whileEl.style.display = 'block';
+  } else {
+    whileEl.style.display = 'none';
+  }
+  window._currentFlowId = flowId;
+  showScreen('screenUrgent');
+}
+
+function goToSteps() {
+  const flow = FLOWS[window._currentFlowId || currentFlow];
+  if (flow) startSteps(flow.steps, flow.done);
+}
+
+function showAssess(flow) {
+  const a = flow.assess;
+  stepList = flow.steps;
+
+  const card = document.getElementById('stepCard');
+  const foot = document.getElementById('stepFoot');
+
+  document.getElementById('stepProgress').style.width = '5%';
+  document.getElementById('stepProgress').className = 'progress-fill';
+  document.getElementById('stepLabel').textContent = '狀況評估';
+
+  // Hide back button on assess screen (it's the entry point)
+  const backBtn = document.getElementById('stepBackBtn');
+  if (backBtn) {
+    backBtn.style.opacity = '0';
+    backBtn.style.pointerEvents = 'none';
+  }
+
+  card.className = 'step-card';
+  card.style.cssText = '';
+  card.innerHTML = `
+    <div class="step-calm" style="margin-top:2px">${a.calm}</div>
+    <div class="step-title">${a.question}</div>
+    <div class="assess-opts">
+      ${a.options.map((opt, i) => `
+        <div class="assess-opt${opt.badge === 'urgent' ? ' opt-urgent' : ''}" onclick="handleAssess(${i})">
+          <div class="ao-icon">${opt.e}</div>
+          <div>
+            <div class="ao-main">${opt.main}</div>
+            <div class="ao-sub">${opt.sub}</div>
+          </div>
+          <div class="ao-arrow">›</div>
+        </div>`).join('')}
+    </div>`;
+  foot.innerHTML = '';
+
+  card.classList.add('swipe-in-right');
+  requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('swipe-in-right')));
+
+  showScreen('screenStep');
+  window._assessFlow = flow;
+}
+
+function handleAssess(idx) {
+  const flow = window._assessFlow;
+  const opt = flow.assess.options[idx];
+  const next = opt.next;
+
+  // Urgent redirects
+  const urgentMap = {
+    'urgent':          flow.urgent,
+    'urgent_crash':    flow.urgent_crash,
+    'urgent_burn':     flow.urgent_burn,
+    'urgent_bleed':    flow.urgent_bleed,
+    'urgent_fracture': flow.urgent_fracture,
+    'urgent_cut':      flow.urgent_cut,
+  };
+  if (urgentMap[next]) {
+    showUrgent(urgentMap[next], currentFlow);
+    return;
+  }
+
+  // Named step variants
+  const stepsMap = {
+    'steps':           flow.steps,
+    'steps_mild':      flow.steps_mild    || flow.steps,
+    'steps_injury':    flow.steps_injury  || flow.steps,
+    'steps_conscious': flow.steps_conscious || flow.steps,
+    'steps_cough':     flow.steps_cough   || flow.steps,
+    'steps_inwater':   flow.steps_inwater || flow.steps,
+    'steps_bruise':    flow.steps_bruise  || flow.steps,
+    'steps_puncture':  flow.steps_puncture || flow.steps,
+  };
+  const chosen = stepsMap[next] || flow.steps;
+  startSteps(chosen, flow.done);
+}
+
+function startSteps(steps, done) {
+  stepList = steps;
+  window._doneMeta = done;
+  currentStepIdx = 0;
+  
+  renderStep(0);
+  showScreen('screenStep');
+}
+
+function renderStep(idx) {
+  const step = stepList[idx];
+  if (!step) { showDone(); return; }
+  const total = stepList.length;
+  const pct = Math.round((idx / total) * 100);
+
+  // Topbar
+  document.getElementById('stepProgress').style.width = pct + '%';
+  document.getElementById('stepProgress').className = 'ov-fill' + (step.badgeType === 'urgent' ? ' urgent' : step.badgeType === 'ok' ? ' green' : '');
+  const remain = total - idx - 1;
+  document.getElementById('stepLabel').textContent = remain > 0 ? `還有 ${remain} 步` : '最後一步';
+
+  // Back button: always visible
+  const backBtn = document.getElementById('stepBackBtn');
+  if (backBtn) {
+    backBtn.style.opacity = '1';
+    backBtn.style.pointerEvents = 'auto';
+  }
+
+  const badgeMap = { urgent: 'b-urgent', ok: 'b-ok', warn: 'b-warn' };
+  const badgeCls = badgeMap[step.badgeType] || '';
+  const isLast = idx === total - 1;
+
+  // Build card
+  const card = document.getElementById('stepCard');
+  card.className = 'step-card' + (step.badgeType === 'urgent' ? ' urgent-card' : '');
+  card.style.cssText = '';
+
+  card.innerHTML = `
+    <div class="step-badge ${badgeCls}">${step.badge}</div>
+    ${step.calm ? `<div class="step-calm">${step.calm}</div>` : ''}
+    <div class="step-title">${step.title.replace(/\n/g,'<br>')}</div>
+    <div class="step-detail">${step.detail.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+    ${step.warn ? `<div class="warn-box">⚠️ <span>${step.warn}</span></div>` : ''}
+    ${step.tip  ? `<div class="tip-box">💡 <span>${step.tip}</span></div>`  : ''}
+  `;
+
+  // Footer
+  const foot = document.getElementById('stepFoot');
+  foot.innerHTML = `
+    <button class="primary-btn ${isLast ? 'btn-green' : ''}" onclick="nextStep()">
+      ${isLast ? '✓ ' : ''}${step.btnText}${isLast ? '' : ' →'}
+    </button>
+    ${step.skipText ? `<button class="secondary-btn" onclick="nextStep()">${step.skipText}</button>` : ''}
+    ${step.altText  ? `<button class="secondary-btn btn-warn" onclick="handleAlt('${step.altNext}')">${step.altText}</button>` : ''}
+  `;
+
+  // Animate
+  card.classList.add('swipe-in-right');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    card.classList.remove('swipe-in-right');
+  }));
+}
+// ══════════════════════════════════════════════
+// SWIPE GESTURE
+// ══════════════════════════════════════════════
+let swipeStartX = 0, swipeStartY = 0, swipeDeltaX = 0, isDragging = false, swipeLocked = false;
+
+function attachSwipe(card) {
+  // Remove old listeners by cloning
+  const newCard = card.cloneNode(true);
+  card.parentNode.replaceChild(newCard, card);
+  // Re-attach button
+  
+
+  const hintDone = null;
+  const hintBack = null;
+  const THRESHOLD = 80;
+
+  function onStart(x, y) {
+    swipeStartX = x; swipeStartY = y; swipeDeltaX = 0; isDragging = true; swipeLocked = false;
+    newCard.classList.add('dragging');
+    newCard.style.transition = 'none';
+  }
+  function onMove(x, y) {
+    if (!isDragging) return;
+    const dx = x - swipeStartX;
+    const dy = y - swipeStartY;
+    if (!swipeLocked && Math.abs(dy) > Math.abs(dx) + 10) { isDragging = false; return; }
+    swipeLocked = true;
+    swipeDeltaX = dx;
+    const rot = dx * 0.04;
+    newCard.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
+    newCard.style.opacity = String(1 - Math.abs(dx) / 350);
+    // Show hints
+    if (dx < -THRESHOLD * 0.4) {
+      if(hintDone) hintDone.style.opacity = Math.min(1, (Math.abs(dx) - THRESHOLD * 0.4) / 60).toString();
+      if(hintBack) hintBack.style.opacity = '0';
+    } else if (dx > THRESHOLD * 0.4) {
+      if(hintBack) hintBack.style.opacity = Math.min(1, (dx - THRESHOLD * 0.4) / 60).toString();
+      if(hintDone) hintDone.style.opacity = '0';
+    } else {
+      if(hintDone) hintDone.style.opacity = '0';
+      if(hintBack) hintBack.style.opacity = '0';
+    }
+  }
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    newCard.classList.remove('dragging');
+    if(hintDone) hintDone.style.opacity = '0';
+    if(hintBack) hintBack.style.opacity = '0';
+    if (swipeDeltaX < -THRESHOLD) {
+      // Swipe left = done, next step
+      newCard.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+      newCard.classList.add('swipe-out-left');
+      setTimeout(() => nextStep(), 280);
+    } else if (swipeDeltaX > THRESHOLD && currentStepIdx > 0) {
+      newCard.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+      newCard.style.transform = `translateX(120%) rotate(4deg)`;
+      newCard.style.opacity = '0';
+      setTimeout(() => prevStep(), 280);
+    } else {
+      // Snap back
+      newCard.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease';
+      newCard.style.transform = '';
+      newCard.style.opacity = '';
+    }
+  }
+
+  // Touch events
+  newCard.addEventListener('touchstart', e => { onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive:true });
+  newCard.addEventListener('touchmove', e => { onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive:true });
+  newCard.addEventListener('touchend', onEnd);
+
+  // Mouse events (desktop)
+  newCard.addEventListener('mousedown', e => { onStart(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', onEnd);
+}
+
+function nextStep() {
+  currentStepIdx++;
+  if (currentStepIdx >= stepList.length) {
+    showDone();
+  } else {
+    renderStep(currentStepIdx);
+  }
+}
+
+function prevStep() {
+  if (currentStepIdx > 0) {
+    currentStepIdx--;
+    renderStep(currentStepIdx);
+  } else {
+    const flow = FLOWS[currentFlow];
+    if (flow?.assess) {
+      
+      showAssess(flow);
+    }
+    else goHome();
+  }
+}
+
+function handleAlt(altNext) {
+  if (altNext === 'cpr_redirect' || altNext === 'unconscious') {
+    currentFlow = 'cpr';
+    startSteps(FLOWS.cpr.steps, FLOWS.cpr.done);
+  } else if (altNext === 'goto_done') {
+    showDone();
+  }
+}
+
+// ══════════════════════════════════════════════
+// DONE SCREEN
+// ══════════════════════════════════════════════
+function showDone() {
+  const meta = window._doneMeta || { title:'處理完成', sub:'你冷靜地完成了每個步驟。', followups:[] };
+  document.getElementById('doneTitle').textContent = meta.title;
+  document.getElementById('doneSub').textContent   = meta.sub;
+
+  const label = document.getElementById('followupLabel');
+  const list  = document.getElementById('followupList');
+  if (meta.followups?.length) {
+    label.style.display = 'block';
+    list.innerHTML = meta.followups.map((f, i) => `
+      <div class="followup-item">
+        <div class="fu-check" id="fcheck_${i}" onclick="toggleFollowup(${i})"></div>
+        <div>
+          <div class="fu-name">${f.name}</div>
+          <div class="fu-detail">${f.detail}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    label.style.display = 'none';
+    list.innerHTML = '';
+  }
+  showScreen('screenDone');
+}
+
+function toggleFollowup(i) {
+  const el = document.getElementById(`fcheck_${i}`);
+  el.classList.toggle('on');
+  el.textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+// ══════════════════════════════════════════════
+// VOICE
+// ══════════════════════════════════════════════
+let recognition = null, isListening = false;
+
+const VOICE_MAP = [
+  { id:'cpr',       words:['昏倒','昏迷','失去意識','沒有呼吸','心臟','CPR','停止呼吸','倒下'] },
+  { id:'choke',     words:['哽噎','噎到','嗆到','喘不過氣','異物','卡住'] },
+  { id:'crash',     words:['車禍','撞車','追撞','事故','碰撞','出事'] },
+  { id:'burn',      words:['燙傷','燒傷','灼傷','燙到','燒到','熱水','火'] },
+  { id:'robbery',   words:['搶劫','被搶','遭竊','小偷','偷走','搶走','錢包'] },
+  { id:'drowning',  words:['溺水','落水','掉進水','快溺'] },
+  { id:'abrasion',  words:['擦傷','摔車','跌倒','破皮','撞傷','瘀青','擦破'] },
+  { id:'sprain',    words:['扭傷','扭到','挫傷','腳踝','手腕扭','扭腳'] },
+  { id:'cut',       words:['割傷','刺傷','割到','刺到','流血','切到','玻璃割','刀割'] },
+];
+
+function toggleVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('此瀏覽器不支援語音辨識，請使用 Chrome'); return; }
+  isListening ? stopVoice() : startVoice();
+}
+
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'zh-TW';
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('voiceBtn').classList.add('listening');
+    document.getElementById('voiceIcon').textContent = '🔴';
+    document.getElementById('voiceMain').textContent = '正在聆聽...';
+    document.getElementById('voiceSub').textContent = '說完後放開';
+    document.getElementById('transcriptBox').classList.add('show');
+    document.getElementById('transcriptText').textContent = '...';
+    document.getElementById('transcriptMatch').style.display = 'none';
+  };
+  recognition.onresult = e => {
+    const txt = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('transcriptText').textContent = txt;
+    if (e.results[0].isFinal) matchVoice(txt);
+  };
+  recognition.onend = () => stopVoice();
+  recognition.onerror = () => stopVoice();
+  recognition.start();
+}
+
+function stopVoice() {
+  isListening = false;
+  if (recognition) { try { recognition.stop(); } catch(e){} }
+  document.getElementById('voiceBtn').classList.remove('listening');
+  document.getElementById('voiceIcon').textContent = '🎙️';
+  document.getElementById('voiceMain').textContent = '說出發生什麼事';
+  document.getElementById('voiceSub').textContent = '「我出車禍了」「有人燙傷」「朋友昏倒」';
+  setTimeout(() => document.getElementById('transcriptBox').classList.remove('show'), 2500);
+}
+
+function matchVoice(txt) {
+  const m = VOICE_MAP.find(p => p.words.some(w => txt.includes(w)));
+  if (m) {
+    const name = FLOWS[m.id]?.name || m.id;
+    document.getElementById('transcriptMatch').style.display = 'flex';
+    document.getElementById('matchLabel').textContent = name;
+    setTimeout(() => startFlow(m.id), 700);
+  }
+}
+</script>
+</body>
+</html>
